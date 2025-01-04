@@ -1,0 +1,38 @@
+
+1736005449914:::ffff:127.0.0.1 GET: /api/countries
+
+1736005493341:::1 GET: /api/countries
+
+1736005497974:::ffff:127.0.0.1 GET: /api/countries
+
+1736005594274:::ffff:127.0.0.1 GET: /api/countries
+
+1736005626326:::1 GET: /api/countries
+
+1736005636554:::ffff:127.0.0.1 GET: /api/countries
+
+1736005643967:::1 GET: /api/countries
+
+1736005651886:::ffff:127.0.0.1 GET: /api/countries
+
+1736006160405:::ffff:127.0.0.1 GET: /api/countries
+
+1736006546936:::1 GET: /api/countries
+
+1736006573858:::ffff:127.0.0.1 GET: /api/countries
+
+1736006836507:::1 GET: /api/countries
+
+1736007021465:::ffff:127.0.0.1 GET: /api/countries
+
+1736007061915:::1 GET: /api/countries
+
+1736007065685:::ffff:127.0.0.1 GET: /api/countries
+
+1736007166249:::1 GET: /api/countries
+
+1736007207386:::ffff:127.0.0.1 POST: /api/register
+
+1736007227839:::ffff:127.0.0.1 POST: /api/register
+
+1736007232406:::ffff:127.0.0.1 POST: /api/register
