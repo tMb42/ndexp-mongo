@@ -1,38 +1,186 @@
 
-1736005449914:::ffff:127.0.0.1 GET: /api/countries
+1736772959923:::ffff:127.0.0.1 POST: /api/register
 
-1736005493341:::1 GET: /api/countries
+1736774089223:::ffff:127.0.0.1 POST: /api/register
 
-1736005497974:::ffff:127.0.0.1 GET: /api/countries
+1736774100682:::ffff:127.0.0.1 POST: /api/register
 
-1736005594274:::ffff:127.0.0.1 GET: /api/countries
+1736774132840:::ffff:127.0.0.1 POST: /api/register
 
-1736005626326:::1 GET: /api/countries
+1736774142105:::ffff:127.0.0.1 POST: /api/register
 
-1736005636554:::ffff:127.0.0.1 GET: /api/countries
+1736774301032:::ffff:127.0.0.1 POST: /api/register
 
-1736005643967:::1 GET: /api/countries
+1736775200073:::ffff:127.0.0.1 POST: /api/register
 
-1736005651886:::ffff:127.0.0.1 GET: /api/countries
+1736775311617:::ffff:127.0.0.1 POST: /api/register
 
-1736006160405:::ffff:127.0.0.1 GET: /api/countries
+1736775492979:::ffff:127.0.0.1 POST: /api/register
 
-1736006546936:::1 GET: /api/countries
+1736775543379:::ffff:127.0.0.1 POST: /api/register
 
-1736006573858:::ffff:127.0.0.1 GET: /api/countries
+1736775601586:::ffff:127.0.0.1 POST: /api/register
 
-1736006836507:::1 GET: /api/countries
+1736775694132:::ffff:127.0.0.1 POST: /api/register
 
-1736007021465:::ffff:127.0.0.1 GET: /api/countries
+1736775718946:::ffff:127.0.0.1 POST: /api/register
 
-1736007061915:::1 GET: /api/countries
+1736775748851:::ffff:127.0.0.1 POST: /api/register
 
-1736007065685:::ffff:127.0.0.1 GET: /api/countries
+1736775754588:::ffff:127.0.0.1 POST: /api/register
 
-1736007166249:::1 GET: /api/countries
+1736775862206:::ffff:127.0.0.1 POST: /api/register
 
-1736007207386:::ffff:127.0.0.1 POST: /api/register
+1736775867889:::ffff:127.0.0.1 POST: /api/register
 
-1736007227839:::ffff:127.0.0.1 POST: /api/register
+1736775885821:::ffff:127.0.0.1 POST: /api/register
 
-1736007232406:::ffff:127.0.0.1 POST: /api/register
+1736775924295:::ffff:127.0.0.1 POST: /api/register
+
+1736776593522:::ffff:127.0.0.1 POST: /api/register
+
+1736776601750:::ffff:127.0.0.1 POST: /api/register
+
+1736776651181:::ffff:127.0.0.1 POST: /api/register
+
+1736785133170:::ffff:127.0.0.1 POST: /api/register
+
+1736785141526:::ffff:127.0.0.1 POST: /api/register
+
+1736785202300:::ffff:127.0.0.1 POST: /api/register
+
+1736785233528:::ffff:127.0.0.1 POST: /api/register
+
+1736785265376:::ffff:127.0.0.1 POST: /api/register
+
+1736785659587:::ffff:127.0.0.1 POST: /api/register
+
+1736785686150:::ffff:127.0.0.1 POST: /api/register
+
+1736785870702:::ffff:127.0.0.1 POST: /api/register
+
+1736785925794:::1 GET: /api/countries
+
+1736785944138:::1 GET: /api/countries
+
+1736785982805:::ffff:127.0.0.1 POST: /api/register
+
+1736786031385:::ffff:127.0.0.1 POST: /api/register
+
+1736786239588:::ffff:127.0.0.1 POST: /api/register
+
+1736786254065:::ffff:127.0.0.1 POST: /api/register
+
+1736786298347:::ffff:127.0.0.1 POST: /api/register
+
+1736786334917:::ffff:127.0.0.1 POST: /api/register
+
+1736786345503:::ffff:127.0.0.1 POST: /api/register
+
+1736786472255:::ffff:127.0.0.1 POST: /api/register
+
+1736786495454:::ffff:127.0.0.1 POST: /api/register
+
+1736786761702:::ffff:127.0.0.1 POST: /api/register
+
+1736786835283:::ffff:127.0.0.1 POST: /api/register
+
+1736786894737:::ffff:127.0.0.1 POST: /api/register
+
+1736788694030:::ffff:127.0.0.1 POST: /api/register
+
+1736788703706:::ffff:127.0.0.1 POST: /api/register
+
+1736789703185:::ffff:127.0.0.1 POST: /api/register
+
+1736789876375:::ffff:127.0.0.1 POST: /api/register
+
+1736789882159:::ffff:127.0.0.1 POST: /api/register
+
+1736789992926:::ffff:127.0.0.1 POST: /api/register
+
+1736790001882:::ffff:127.0.0.1 POST: /api/register
+
+1736790024421:::ffff:127.0.0.1 POST: /api/register
+
+1736790129274:::ffff:127.0.0.1 POST: /api/register
+
+1736790157183:::ffff:127.0.0.1 POST: /api/register
+
+1736790164749:::ffff:127.0.0.1 POST: /api/register
+
+1736790439917:::ffff:127.0.0.1 POST: /api/register
+
+1736790452274:::ffff:127.0.0.1 POST: /api/register
+
+1736790513379:::ffff:127.0.0.1 POST: /api/register
+
+1736790595425:::ffff:127.0.0.1 POST: /api/register
+
+1736790610019:::ffff:127.0.0.1 POST: /api/register
+
+1736791361357:::ffff:127.0.0.1 POST: /api/register
+
+1736791373049:::ffff:127.0.0.1 POST: /api/register
+
+1736791385930:::ffff:127.0.0.1 POST: /api/register
+
+1736791503850:::ffff:127.0.0.1 POST: /api/register
+
+1736791643305:::ffff:127.0.0.1 POST: /api/register
+
+1736791828233:::ffff:127.0.0.1 POST: /api/register
+
+1736791835283:::ffff:127.0.0.1 POST: /api/register
+
+1736792002446:::ffff:127.0.0.1 POST: /api/register
+
+1736792016138:::ffff:127.0.0.1 POST: /api/register
+
+1736792113328:::ffff:127.0.0.1 POST: /api/register
+
+1736792324160:::ffff:127.0.0.1 POST: /api/register
+
+1736792332777:::ffff:127.0.0.1 POST: /api/register
+
+1736792543862:::ffff:127.0.0.1 POST: /api/register
+
+1736792743380:::ffff:127.0.0.1 POST: /api/register
+
+1736792907046:::ffff:127.0.0.1 POST: /api/register
+
+1736792911981:::ffff:127.0.0.1 POST: /api/register
+
+1736792937269:::ffff:127.0.0.1 POST: /api/register
+
+1736792941027:::ffff:127.0.0.1 POST: /api/register
+
+1736792965085:::ffff:127.0.0.1 POST: /api/register
+
+1736793389406:::1 GET: /api/countries
+
+1736793425326:::ffff:127.0.0.1 POST: /api/register
+
+1736793622276:::1 GET: /api/countries
+
+1736793653172:::ffff:127.0.0.1 POST: /api/register
+
+1736793675031:::ffff:127.0.0.1 POST: /api/register
+
+1736793684170:::ffff:127.0.0.1 POST: /api/register
+
+1736793693196:::ffff:127.0.0.1 POST: /api/register
+
+1736794785022:::ffff:127.0.0.1 POST: /api/register
+
+1736794826735:::ffff:127.0.0.1 POST: /api/register
+
+1736794859198:::ffff:127.0.0.1 GET: /api/countries
+
+1736794865446:::ffff:127.0.0.1 POST: /api/login
+
+1736823290589:::ffff:127.0.0.1 GET: /api/countries
+
+1736823338926:::1 GET: /api/countries
+
+1736826200522:::1 GET: /api/countries

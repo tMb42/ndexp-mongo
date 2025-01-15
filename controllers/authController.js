@@ -1,74 +1,73 @@
-const User = require('../models/user');
+const User = require('../models/user'); // Mongoose model for User
+const UserProfile = require('../models/userProfile'); // Mongoose model for UserProfile
+const Role = require('../models/role'); // Mongoose model for Role
+const bcrypt = require('bcrypt');// Import bcryptjs for password hashing
+const { sendEmailVerificationNotification } = require('../services/emailVerificationService');
 
 exports.signUp = async (req, res) => {
-  try { 
-    // const {name, email, password, password_confirmation} = req.body;    
-    await User.findOne({
-      where: {email: req.body.email}
-    }).then(async isAvailable =>{      
-      if(isAvailable){
-        return res.status(400).send({
-          success: false,
-          message: "Email is already Registered!"
-        }); 
+  try {
+    const { name, email, password, password_confirmation, birthDate, gender, mobile } = req.body;
 
-      }else{
-        if(req.body.password !== req.body.password_confirmation){
-          return res.status(400).send({
-            success: false,
-            message: "Password doesn't matched!"
-          });  
-    
-        }else{
-          const registeredData = {
-            name: req.body.name, 
-            email: req.body.email, 
-            dob: req.body.birthDate,
-            gender: req.body.gender,
-            mobile_no: req.body.mobile,
-            password: bcrypt.hashSync(req.body.password,10) //rounds = 15: ~3 sec/hash. The module will use the value you enter and go through 2^rounds hashing iterations.
-          };
-          await User.create(registeredData).then(async data => {            
-            await UserProfile.create({
-              user_id: data.dataValues.id,
-              display: 1,
-              inforce: 1,
-            });
-            await Profile.create({
-              user_id: data.dataValues.id
-            });
-
-            const role = await Role.findOne({ where: { label: 'User' } });
-            await data.addRole(role);
-          
-            //Send Email for verification!
-            await sendEmailVerificationNotification(data.dataValues, res);
-            
-          }).catch(err => {
-            res.status(500).json({
-              success: 0,
-              message: err.message || "Some error occurred when you are trying to register"
-            });
-          });  
-          
-        }
-      }
-    }).catch((err)=>{
-      res.status(500).json({
-        success: 0,
-        message: err,
+    // Check if the email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(200).json({
+        success: false,
+        message: 'Email is already registered!',
       });
+    }
+
+    // Check if passwords match
+    if (password !== password_confirmation) {
+      return res.status(200).json({
+        success: false,
+        message: "Passwords don't match!",
+      });
+    }
+
+    // Create the user
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const newUser = new User({
+      name,
+      email,
+      dob: birthDate,
+      gender,
+      mobile_no: mobile,
+      password: hashedPassword,
     });
-          
+    const user = await newUser.save(); // Save the user and assign it to `user`
+
+    // Create a user profile
+    const userProfile = new UserProfile({
+      user_id: user._id, // Use `user._id` from the saved user
+      display: 1,
+      inforce: 1,
+    });
+    await userProfile.save();
+
+    // Assign the "User" role to the new user
+    const userRole = await Role.findOne({ label: 'User' });
+    if (userRole) {
+      user.roles.push(userRole._id); // Add the role to the user's roles array
+      await user.save(); // Save the updated user
+    }
+
+    // Send email for verification
+    await sendEmailVerificationNotification(user, res);
+
+    return res.status(201).json({
+      success: true,
+      message: 'User registered successfully! Verification email sent.',
+    });
   } catch (error) {
-    res.status(501).json({
-      success: 0,
-      message: error,
-    });   
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'An error occurred while processing your request.',
+    });
   }
-      
-}
-  
+};
+
 exports.signIn = async (req, res) => {
   try {
     const { email, password, device_name, remember } = req.body;
@@ -83,7 +82,7 @@ exports.signIn = async (req, res) => {
       where: { email } 
     }).then(async isAvailable =>{ 
       if(!isAvailable){
-        return res.status(400).send({
+        return res.status(200).send({
           success: 0,
           message: 'The provided registered email is incorrect!'
         });

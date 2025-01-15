@@ -4,9 +4,20 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Please enter your name'],
-        unique: true,
         trim: true,
         maxlength: [150, 'Name cannot exceed 150 characters']
+    },
+    dob: {
+        type: Date,
+        required: false,
+    },
+    gender: {
+        type: String,
+        required: [true, 'Select Gender'],
+    },
+    mobile_no: {
+        type: String,
+        required: [true, 'Select Mobile no.'],
     },
     email: {
         type: String,
@@ -20,16 +31,15 @@ const userSchema = new mongoose.Schema({
         ]
     },
     email_verified_at: {
-        type: Date
+        type: Date,
     },
     password: {
         type: String,
         required: [true, 'Please enter your password'],
-        minlength: 6,
-        select: false
+        minlength: 8,
     },
     remember_token: {
-        type: String
+        type: String,
     },
     created_at: {
         type: Date,
@@ -38,8 +48,20 @@ const userSchema = new mongoose.Schema({
     updated_at: {
         type: Date,
         default: Date.now
-    }
-})
+    },
+    roles: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Role', // Referencing the Role model
+        },
+    ],
+});
+
+// Middleware to update `updated_at`
+userSchema.pre('save', function (next) {
+    this.updated_at = Date.now();
+    next();
+});
 
 const User = mongoose.model('User', userSchema);
 

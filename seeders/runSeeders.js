@@ -3,6 +3,7 @@ require('colors');
 
 const mongoose = require('mongoose');
 const countrySeeder = require('./countrySeeder');
+const roleSeeder = require('./roleSeeder');
 
 const mongoURL = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_DB_PORT}/${process.env.MONGO_DB_NAME}`;
 
@@ -14,6 +15,7 @@ const runSeeders = async () => {
     // Run individual seeders
     console.log('Running Country Seeder...');
     await countrySeeder();
+    await roleSeeder();
    
 
     console.log('All seeders executed successfully.'.bgWhite.green.bold);
