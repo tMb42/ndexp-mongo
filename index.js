@@ -1,8 +1,10 @@
 require('dotenv').config();
 require('colors');
+require('./helper/changeCase');
 
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const routerIndex = require('./routes/index.js');
 const { logReqRes } = require('./middleware/index.js');
 const { connectDB, syncIndexes } = require('./mongoDB/config.js');
@@ -19,6 +21,8 @@ app.use(cors({
 
 // Middleware
 app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(logReqRes('log.txt'));
 
 // Routes  

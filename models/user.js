@@ -17,8 +17,10 @@ const userSchema = new mongoose.Schema({
     },
     mobile_no: {
         type: String,
+        unique: true,
         required: [true, 'Select Mobile no.'],
     },
+    mobile_nos_previous: [String], // Array to store old mobile numbers
     email: {
         type: String,
         required: [true, 'Please enter your email'],
@@ -32,6 +34,7 @@ const userSchema = new mongoose.Schema({
     },
     email_verified_at: {
         type: Date,
+        default: null,
     },
     password: {
         type: String,
@@ -39,6 +42,27 @@ const userSchema = new mongoose.Schema({
         minlength: 8,
     },
     remember_token: {
+        type: String,
+    },
+    photo: {
+        type: String,
+        default: 'storage/images/no_image.png', // Default image path
+        required: true,
+    },
+    display: {
+        type: Number,
+        required: true,
+        default: 1 // equivalent to DataTypes.TINYINT with defaultValue: 1 in Sequelize
+    },
+    inforce: {
+        type: Number,
+        required: true,
+        default: 1 // equivalent to DataTypes.TINYINT with defaultValue: 1 in Sequelize
+    },
+    remarks: {
+        type: String,
+    },
+    aboutMe: {
         type: String,
     },
     created_at: {
@@ -49,12 +73,13 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    roles: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Role', // Referencing the Role model
-        },
-    ],
+    roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }]
+
+});
+
+// Virtual property for full photo URL
+userSchema.virtual('photoUrl').get(function () {
+    return `${process.env.APP_URL}/${this.photo}`;
 });
 
 // Middleware to update `updated_at`

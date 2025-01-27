@@ -1,8 +1,7 @@
 const express = require('express');
+const router = express.Router();
 const countryClr = require('../controllers/dropdownController');
 
-
-const router = express.Router();
 
 
 router.route('/countries').get(countryClr.getAllCountries);

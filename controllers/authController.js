@@ -1,68 +1,81 @@
 const User = require('../models/user'); // Mongoose model for User
-const UserProfile = require('../models/userProfile'); // Mongoose model for UserProfile
 const Role = require('../models/role'); // Mongoose model for Role
 const bcrypt = require('bcrypt');// Import bcryptjs for password hashing
+const jwt = require('jsonwebtoken'); // Import jsonwebtoken for generating JWT tokens
 const { sendEmailVerificationNotification } = require('../services/emailVerificationService');
+const UserResource = require('../resources/UserResource');
 
 exports.signUp = async (req, res) => {
   try {
-    const { name, email, password, password_confirmation, birthDate, gender, mobile } = req.body;
+    const { name, email, password, password_confirmation, birthDate, gender, mobile, email_verified_at, remember_token, photo } = req.body;
 
-    // Check if the email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(200).json({
-        success: false,
+    // Step 1: Check if the email already exists
+    const existingUserByEmail = await User.findOne({ email });
+    if (existingUserByEmail) {
+      return res.status(409).json({
+        success: 0,
         message: 'Email is already registered!',
       });
     }
 
-    // Check if passwords match
+    // Step 2: Check if the mobile number already exists
+    const existingUserByMobile = await User.findOne({ mobile_no: mobile });
+    if (existingUserByMobile) {
+      return res.status(409).json({
+        success: 0,
+        message: 'Mobile number is already registered!',
+      });
+    }
+
+    // Step 3: Check if passwords match
     if (password !== password_confirmation) {
-      return res.status(200).json({
-        success: false,
+      return res.status(400).json({
+        success: 0,
         message: "Passwords don't match!",
       });
     }
 
-    // Create the user
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    // Step 4: Create the user
     const newUser = new User({
-      name,
+      name: capitalizeWords(name),
       email,
       dob: birthDate,
       gender,
       mobile_no: mobile,
-      password: hashedPassword,
-    });
-    const user = await newUser.save(); // Save the user and assign it to `user`
-
-    // Create a user profile
-    const userProfile = new UserProfile({
-      user_id: user._id, // Use `user._id` from the saved user
+      password: bcrypt.hashSync(password, 10),
+      email_verified_at,
+      remember_token,
+      photo,
       display: 1,
       inforce: 1,
     });
-    await userProfile.save();
 
-    // Assign the "User" role to the new user
-    const userRole = await Role.findOne({ label: 'User' });
+    const user = await newUser.save();
+
+    // Step 5: Assign the "User" role to the new user
+    const userRole = await Role.findOne({ name: 'user' });
     if (userRole) {
       user.roles.push(userRole._id); // Add the role to the user's roles array
       await user.save(); // Save the updated user
     }
 
-    // Send email for verification
+    // Step 6: Send email for verification
     await sendEmailVerificationNotification(user, res);
 
+    // Step 7: Fetch the user and populate roles
+    const populatedUser = await User.findById(user._id).populate('roles');
+
+    // Step 8: Format the user data using UserResource
+    const userResource = new UserResource(populatedUser);
     return res.status(201).json({
-      success: true,
+      success: 1,
       message: 'User registered successfully! Verification email sent.',
+      user: userResource.toJSON(),
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      success: false,
+      success: 0,
       message: error.message || 'An error occurred while processing your request.',
     });
   }
@@ -70,88 +83,97 @@ exports.signUp = async (req, res) => {
 
 exports.signIn = async (req, res) => {
   try {
-    const { email, password, device_name, remember } = req.body;
+    const { email, password, remember } = req.body;
+
+    // Check if email and password are provided
     if (!email || !password) {
       return res.status(400).json({
         success: 0,
-        message: "Please Provide your registered Email-Id and password!"
-      })
+        message: "Please provide your registered Email-Id and password!"
+      });
     }
-  
-    await User.findOne({ 
-      where: { email } 
-    }).then(async isAvailable =>{ 
-      if(!isAvailable){
-        return res.status(200).send({
-          success: 0,
-          message: 'The provided registered email is incorrect!'
-        });
-          
-      }else{
-        if(!isAvailable.email_verified_at){
-          res.status(401).json({
-            success: false,
-            message: 'Your E-mail verification is not Completed!'
-          })
-        }else{
-          const isPasswordValid = await bcrypt.compare(password, isAvailable.password);
-          if(!isPasswordValid){
-            return res.status(400).send({
-              success: 0,
-              message: 'The provided password credentials is incorrect!'
-            });
-          }else{       
-            // Determine token expiration based on "remember me" option
-            const tokenExpiresInSecond = remember 
-            ? parseDuration(process.env.JWT_EXPIRES_IN_REMEMBER_ME)  // Convert to seconds
-            : parseDuration(process.env.JWT_EXPIRES_IN); // Convert to seconds
 
-            // Log the parsed duration
-            console.log('Parsed tokenExpiresIn in seconds:', tokenExpiresInSecond);
+    // Find user by email
+    const isAvailable = await User.findOne({ email }).populate('roles'); // Using Mongoose's findOne() method
+        
+    if (!isAvailable) {
+      return res.status(400).json({
+        success: 0,
+        message: 'The provided registered email is incorrect!'
+      });
+    }
 
-            // Generate JWT token
-            const jwtGenerate = jwt.sign({
-              id: isAvailable.id, 
-              emailId: isAvailable.email
-            }, 
-              process.env.JWT_SECRET, 
-            {
-              expiresIn: tokenExpiresInSecond + 60 //60s extra for bufferime 
-            });
-            
-            // Also return the expiration time to the client
-            const expiresAt = jwt.decode(jwtGenerate).exp * 1000; // Convert to milliseconds
-                    
-            // Log the decoded expiration timestamp
-            console.log('JWT decoded exp in ms:', expiresAt);    
+    // Check if email is verified
+    if (!isAvailable.email_verified_at) {
+      return res.status(401).json({
+        success: 0,
+        message: 'Your E-mail verification is not completed!'
+      });
+    }
 
-            // Generate Personal Access Token
-            await generatePersonalAccessToken(isAvailable, device_name, tokenExpiresInSecond);
+    // Compare the provided password with the hashed password in the database
+    const isPasswordValid = await bcrypt.compare(password, isAvailable.password);
 
-            return res.status(201).json({
-              success: 1,
-              message: "You are logged in successfully!",
-              userData: new UserResource(isAvailable).toJSON(),
-              token: jwtGenerate,
-              expiresAt: expiresAt // Send this to the client
-            });
-          }
-        }
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        success: 0,
+        message: 'The provided password is incorrect!'
+      });
+    }
+
+    // Determine token expiration based on "remember me" option
+    const tokenExpiresInSecond = remember 
+      ? parseDuration(process.env.JWT_EXPIRES_IN_REMEMBER_ME)  // Convert to seconds
+      : parseDuration(process.env.JWT_EXPIRES_IN); // Convert to seconds
+
+    console.log('Parsed tokenExpiresIn in seconds:', tokenExpiresInSecond);
+
+    // Generate JWT token
+    const jwtGenerate = jwt.sign(
+      {
+        id: isAvailable._id, // Use the Mongoose `_id` field
+        emailId: isAvailable.email,
+      },
+      process.env.JWT_SECRET, 
+      {
+        expiresIn: tokenExpiresInSecond + 60 // 60 seconds extra for buffer time
       }
-    })
+    );
+    // Decode the JWT token to get the expiration time in milliseconds
+    const expiresAt = jwt.decode(jwtGenerate).exp * 1000; // Convert to milliseconds
+    console.log('JWT decoded exp in ms:', expiresAt);
+
+    // Optionally, generate Personal Access Token if required
+    // await generatePersonalAccessToken(isAvailable, email, tokenExpiresInSecond);
+
+    // Return the response with user data and the JWT token
+    return res.status(200).json({
+      success: 1,
+      message: "You are logged in successfully!",
+      userData: new UserResource(isAvailable).toJSON(),
+      token: jwtGenerate,
+      expiresAt: expiresAt // Send this to the client
+    });
 
   } catch (error) {
-    res.status(400).send(error);
+    console.error(error);
+    return res.status(500).json({
+      success: 0,
+      message: error,
+    });
   }
 };
 
 exports.signOut = async (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
   try {
-    if (req.paToken) {
-      await req.paToken.destroy();
+    if(decoded.id) {
       return res.status(201).json({
         success: 1,
-        message: "You have logged out successfully"
+        message: "You have logged out successfully!"
       });
     } else {
       return res.status(400).json({
@@ -160,7 +182,6 @@ exports.signOut = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: 0,
       message: "An error occurred. Please try again later."
@@ -172,7 +193,7 @@ exports.verifyEmail = async (req, res) => {
   const { token } = req.params;
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(verified.id);
+    const user = await User.findById(verified.id);
     
     if (!user) {
       return res.status(404).json({
@@ -203,6 +224,81 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
+exports.updateUserProfile = async (req, res) => {
+  const { name, dob, gender, mobile, aboutMe, remarks } = req.body;
+
+  try {
+    // Step 1: Fetch the current user to compare the existing mobile number
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: 0,
+        message: 'User not found.',
+      });
+    }
+
+    // Step 2: Check if the new mobile number is already in use by another user
+    if (mobile !== user.mobile_no) {
+      const existingUser = await User.findOne({
+        mobile_no: mobile,
+        _id: { $ne: req.user._id }, // Exclude the current user from the search
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          success: 0,
+          message: 'The mobile number is already associated with another user.',
+        });
+      }
+    }
+
+    // Step 3: Update the user's profile with conditional logic for mobile number
+    const updateData = {
+      $set: {
+        name: capitalizeWords(name),
+        dob,
+        gender,
+        aboutMe: sentenceCase(aboutMe),
+        remarks: sentenceCase(remarks),
+      },
+    };
+
+    // Push the current mobile number to history only if it has changed
+    if (mobile !== user.mobile_no) {
+      updateData.$set.mobile_no = mobile;
+      updateData.$push = { mobile_nos_previous: user.mobile_no };
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      updateData,
+      { new: true }
+    ).populate('roles');
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: 0,
+        message: 'User not found.',
+      });
+    }
+
+    // Use UserResource to format the user data
+    const userResource = new UserResource(updatedUser);
+    return res.status(201).json({
+      success: 1,
+      message: 'Profile is updated successfully!',
+      userData: userResource.toJSON(),
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    return res.status(500).json({
+      success: 0,
+      message: 'An error occurred while updating the profile.',
+    });
+  }
+};
+
 exports.getAuthUserDetails = async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ 
@@ -210,20 +306,61 @@ exports.getAuthUserDetails = async (req, res) => {
       message: "Unauthorized - No user information available"
     });
   }
-  // const user = await User.findByPk(req.user.id);
-  const user = await User.findByPk(req.user.id, {
-    include: [
-      {
-        model: Role,
-      },
-      {
-        model: Profile
-      }
-    ],    
-  });
-  
+
+  const user = await User.findOne({ _id: req.user._id }).populate('roles');
   res.json({
     success: 1,
     data: new UserResource(user) // Format user details using UserResource    
   });
+  
 };
+
+
+const parseDuration = (duration) => {
+  const match = duration.match(/^(\d+)([dhms])$/);
+  if (!match) throw new Error('Invalid duration format');
+  
+  const value = parseInt(match[1], 10);
+  const unit = match[2];
+  
+  switch (unit) {
+    case 'd': // days
+      return value * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+    case 'h': // hours
+      return value * 60 * 60 * 1000; // Convert hours to milliseconds
+    case 'm': // minutes
+      return value * 60 * 1000; // Convert minutes to milliseconds
+    case 's': // seconds
+      return value * 1000; // Convert seconds to milliseconds
+    default:
+      throw new Error('Unsupported time unit');
+  }
+};
+
+// exports.getAllDoctors = async (req, res) =>{
+//   try {
+//     const doctors = await User.find(); 
+//     const doctorsData = doctors.map((dr) => ({
+//       id: dr._id,
+//       doctor_name: dr.name, 
+//       display: dr.display, 
+//       inforce: dr.inforce, 
+//       remarks: dr.remarks,  
+//       created_at: dr.created_at,  
+//       updated_at: dr.updated_at, 
+//     }));
+
+//     // Return the data in the required format
+//     res.json({
+//       doctorsData
+//     });
+    
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ 
+//       status: 'error',
+//       message: 'Error fetching doctors',
+//       error: err.message
+//     });
+//   }
+// }

@@ -24,7 +24,7 @@ const mailTransport = nodemailer.createTransport({
 const sendEmailVerificationNotification = async (user, res) => {
   try {
     // Generate JWT token for email verification
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
@@ -35,6 +35,7 @@ const sendEmailVerificationNotification = async (user, res) => {
     const url = baseUrl + queryString;
 
     // Dynamically construct image URL
+    // const imageUrl = `${process.env.APP_URL}/assets/appImage/mail_logo.jpg`;
     const imageUrl = `${process.env.APP_URL}/assets/appImage/mail_logo.png`;
 
     // Read email template asynchronously
@@ -64,7 +65,7 @@ const sendEmailVerificationNotification = async (user, res) => {
     // Send success response
     res.status(200).json({
       success: 1,
-      message: 'Your registration is complete. Please verify your email.',
+      message: 'Your registration is completed. Please verify your email.',
       user: new UserResource(user).toJSON(),
     });
   } catch (error) {
