@@ -5426,3 +5426,29 @@
 1737970423444:::ffff:127.0.0.1 GET: /api/userDetails
 
 1737970423539:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1737988797751:::ffff:127.0.0.1 POST: /api/logout
+
+1737988802217:::ffff:127.0.0.1 POST: /api/login
+
+1737988802351:::ffff:127.0.0.1 GET: /api/userDetails
+
+1737988802361:::ffff:127.0.0.1 GET: /api/userDetails
+
+1737988809664:::ffff:127.0.0.1 POST: /api/logout
+
+1737988814006:::ffff:127.0.0.1 POST: /api/login
+
+1737988814086:::ffff:127.0.0.1 GET: /api/userDetails
+
+1737988814093:::ffff:127.0.0.1 GET: /api/userDetails
+
+1737988819429:::ffff:127.0.0.1 POST: /api/logout
+
+1737988824054:::ffff:127.0.0.1 POST: /api/login
+
+1737988824133:::ffff:127.0.0.1 GET: /api/userDetails
+
+1737988824140:::ffff:127.0.0.1 GET: /api/userDetails
+
+1737988834612:::ffff:127.0.0.1 POST: /api/logout

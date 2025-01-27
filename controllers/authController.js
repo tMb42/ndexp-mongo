@@ -1,6 +1,6 @@
 const User = require('../models/user'); // Mongoose model for User
 const Role = require('../models/role'); // Mongoose model for Role
-const bcrypt = require('bcrypt');// Import bcryptjs for password hashing
+const bcrypt = require('bcryptjs');// Import bcryptjs for password hashing
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken for generating JWT tokens
 const { sendEmailVerificationNotification } = require('../services/emailVerificationService');
 const UserResource = require('../resources/UserResource');
