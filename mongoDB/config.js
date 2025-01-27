@@ -2,7 +2,18 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 require('colors');
 
-const mongoURL = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_DB_PORT}/${process.env.MONGO_DB_NAME}`;
+// Build the MongoDB connection string dynamically
+const getMongoURL = () => {
+  const dbName = process.env.MONGO_DB_NAME;
+  if (process.env.NODE_ENV === 'production') {
+    // Append the database name to the MongoDB Atlas connection string
+    return `${process.env.MONGO_ATLAS_URI}/${dbName}?retryWrites=true&w=majority`;
+  } else {
+    // Use local MongoDB connection string for development
+    return `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_DB_PORT}/${dbName}`;
+  }
+};
+const mongoURL = getMongoURL();
 
 // MongoDB connection function
 const connectDB = async () => {
@@ -31,4 +42,5 @@ const syncIndexes = async (models) => {
   }
 };
 
-module.exports = { connectDB, syncIndexes };
+// Export the functions
+module.exports = { connectDB, syncIndexes, getMongoURL };

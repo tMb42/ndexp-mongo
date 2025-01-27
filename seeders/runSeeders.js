@@ -1,22 +1,24 @@
+// SuperindendingEngineereded/seeders/runSeeders.js
+
 require('dotenv').config();
 require('colors');
-
 const mongoose = require('mongoose');
+const { getMongoURL } = require('../mongoDB/config'); // Adjust the path based on your file structure
 const countrySeeder = require('./countrySeeder');
 const roleSeeder = require('./roleSeeder');
 
-const mongoURL = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_DB_PORT}/${process.env.MONGO_DB_NAME}`;
-
 const runSeeders = async () => {
+  const mongoURL = getMongoURL(); // Get the mongoURL dynamically
+
   try {
     await mongoose.connect(mongoURL);
-    console.log('Connected to MongoDB');
+    console.log(`Connected to MongoDB at ${mongoURL}`);
 
     // Run individual seeders
     console.log('Running Country Seeder...');
     await countrySeeder();
+    console.log('Running Role Seeder...');
     await roleSeeder();
-   
 
     console.log('All seeders executed successfully.'.bgWhite.green.bold);
   } catch (error) {
@@ -24,7 +26,6 @@ const runSeeders = async () => {
   } finally {
     mongoose.connection.close();
   }
-
 };
 
 runSeeders();

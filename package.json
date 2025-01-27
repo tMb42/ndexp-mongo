@@ -4,8 +4,10 @@
   "description": "It's a Backend for MongoDB API",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "seed": "node seeders/runSeeders.js"
+    "start": "NODE_ENV=development nodemon index.js",
+    "prod": "NODE_ENV=production node index.js",
+    "seed:local": "NODE_ENV=development node seeders/runSeeders.js",
+    "seed:prod": "NODE_ENV=production node seeders/runSeeders.js"
   },
   "author": "Er. B. K. Karan",
   "license": "ISC",
