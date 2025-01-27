@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Coverage directory (if using a tool like Jest)
+coverage/
+
+# npm package logs
+npm-debug.log*
+
+# Optional: if using SQLite
+*.sqlite
+
+# Optional: tarballs for packaged apps
+*.tgz

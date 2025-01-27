@@ -115,18 +115,53 @@ exports.getMedicineDetailsById = async (req, res) => {
 
 exports.updateMedicineById = async (req, res) => {
   try {
-    const updateData = req.body; // Get the data to update from the request body
+    const { 
+      _id, 
+      medName,
+      kingdom,
+      family,
+      miasm,
+      temperament,
+      diathisis,
+      thermalReaction,
+      personility,
+      notes,
+      remarks 
+    } = req.body;
+
+    // Function to split values by commas and capitalize each value
+    const splitByCommaAndCapitalize = (field) => {
+      if (field && typeof field === 'string') {
+        return field.split(',').map(item => capitalizeWords(item.trim())); // Split by comma and capitalize each word
+      }
+      return field ? [capitalizeWords(field)] : []; // If not a string or empty, return as a single-item array with capitalized value
+    };
+
+    // Ensure all fields are arrays and apply sentenceCase
+    const updateData = {
+      medName: capitalizeWords(medName),
+      kingdom: splitByCommaAndCapitalize(kingdom),
+      family: splitByCommaAndCapitalize(family),
+      miasm: splitByCommaAndCapitalize(miasm),
+      temperament: splitByCommaAndCapitalize(temperament),
+      diathisis: splitByCommaAndCapitalize(diathisis),
+      thermalReaction: splitByCommaAndCapitalize(thermalReaction),
+      personility: splitByCommaAndCapitalize(personility),
+      notes: notes ? sentenceCase(notes) : null,
+      remarks: remarks ? sentenceCase(remarks) : null,
+    };
 
     // Use findByIdAndUpdate to update the medicine document
-    const updatedMedicine = await Medicine.findByIdAndUpdate({ _id: req.body._id }, updateData, { new: true });
+    const updatedMedicine = await Medicine.findByIdAndUpdate({ _id }, updateData, { new: true });
 
     if (!updatedMedicine) {
       return res.status(404).json({ message: 'Medicine not found' });
     }
+
     res.status(200).json({
       success: 1,
       updatedMedicine: updatedMedicine,
-      message: 'Medicine update successfully!',
+      message: 'Medicine updated successfully!',
     });
     
   } catch (error) {
@@ -134,6 +169,7 @@ exports.updateMedicineById = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while updating', error });
   }
 };
+
 
 // Search medicine details
 exports.searchMedicineDetails = async (req, res) => {

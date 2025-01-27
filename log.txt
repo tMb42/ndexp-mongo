@@ -5422,3 +5422,7 @@
 1737966842358:::ffff:127.0.0.1 GET: /api/userDetails
 
 1737966856794:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1737970423444:::ffff:127.0.0.1 GET: /api/userDetails
+
+1737970423539:::ffff:127.0.0.1 GET: /api/cpanel/medicines
