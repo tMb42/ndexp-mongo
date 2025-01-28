@@ -117,56 +117,53 @@ exports.updateMedicineById = async (req, res) => {
   try {
     const { 
       _id, 
-      medName,
-      kingdom,
-      family,
-      miasm,
-      temperament,
-      diathisis,
-      thermalReaction,
-      personility,
-      notes,
-      remarks 
+      medName = '', 
+      kingdom = '', 
+      family = '', 
+      miasm = '', 
+      temperament = '', 
+      diathisis = '', 
+      thermalReaction = '', 
+      personility = '', 
+      notes = null, 
+      remarks = null 
     } = req.body;
 
-    // Function to split values by commas and capitalize each value
     const splitByCommaAndCapitalize = (field) => {
-      if (field && typeof field === 'string') {
-        return field.split(',').map(item => capitalizeWords(item.trim())); // Split by comma and capitalize each word
-      }
-      return field ? [capitalizeWords(field)] : []; // If not a string or empty, return as a single-item array with capitalized value
+      if (!field || typeof field !== 'string') return [];
+      return field.split(',').map(item => capitalizeWords(item.trim()));
     };
 
-    // Ensure all fields are arrays and apply sentenceCase
     const updateData = {
       medName: capitalizeWords(medName),
-      kingdom: splitByCommaAndCapitalize(kingdom),
+      kingdom: splitByCommaAndCapitalize(kingdom), 
       family: splitByCommaAndCapitalize(family),
-      miasm: splitByCommaAndCapitalize(miasm),
-      temperament: splitByCommaAndCapitalize(temperament),
-      diathisis: splitByCommaAndCapitalize(diathisis),
-      thermalReaction: splitByCommaAndCapitalize(thermalReaction),
-      personility: splitByCommaAndCapitalize(personility),
-      notes: notes ? sentenceCase(notes) : null,
-      remarks: remarks ? sentenceCase(remarks) : null,
+      miasm: splitByCommaAndCapitalize(miasm), 
+      temperament: splitByCommaAndCapitalize(temperament), 
+      diathisis: splitByCommaAndCapitalize(diathisis), 
+      thermalReaction: splitByCommaAndCapitalize(thermalReaction), 
+      personility: splitByCommaAndCapitalize(personility), 
+      notes: notes ? sentenceCase(notes) : null, 
+      remarks: remarks ? sentenceCase(remarks) : null, 
     };
 
-    // Use findByIdAndUpdate to update the medicine document
-    const updatedMedicine = await Medicine.findByIdAndUpdate({ _id }, updateData, { new: true });
+    const updatedMedicine = await Medicine.findByIdAndUpdate(_id, updateData, { new: true });
 
     if (!updatedMedicine) {
-      return res.status(404).json({ message: 'Medicine not found' });
+      return res.status(404).json({ success: 0, message: 'Medicine not found' });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: 1,
-      updatedMedicine: updatedMedicine,
-      message: 'Medicine updated successfully!',
+      message: 'Medicine updated successfully',
+      updatedMedicine,
     });
-    
   } catch (error) {
     console.error('Error updating medicine:', error);
-    res.status(500).json({ message: 'An error occurred while updating', error });
+    return res.status(500).json({
+      success: 0,
+      message: 'An error occurred while updating the medicine',
+    });
   }
 };
 

@@ -1,18 +1,17 @@
 // 1. Capitalize Each Word (Title Case)
 function capitalizeWords(str) {
-  if (str) {
-    // Remove any trailing full stop
-    str = str.replace(/\.$/, '').trim();
-    
-    // Capitalize first letter of each word
-    return str
-      .toLowerCase()
-      .split(' ') // Split the string by spaces
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter of each word
-      .join(' '); // Join the words back into a single string
-  }
-  return str; // If input is empty or invalid, return the original string
+  if (typeof str !== 'string') return str; // Return as is if not a string
+
+  // Remove trailing full stop and capitalize each word
+  return str
+    .replace(/\.$/, '')
+    .trim()
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
+
 
 
 // 2. Sentence Case

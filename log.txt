@@ -5522,3 +5522,99 @@
 1738040413927:::ffff:127.0.0.1 POST: /api/register
 
 1738040419441:::ffff:127.0.0.1 POST: /api/register
+
+1738043764908:::1 GET: /assets/appImage/mail_logo2.png
+
+1738043769661:::1 GET: /assets/appImage/mail_logo2.png
+
+1738043770957:::1 GET: /assets/appImage/mail_logo2.png
+
+1738043772002:::1 GET: /assets/appImage/mail_logo.png
+
+1738043773087:::1 GET: /assets/appImage/mail_logo.png
+
+1738059879490:::ffff:127.0.0.1 POST: /api/login
+
+1738059880850:::ffff:127.0.0.1 POST: /api/login
+
+1738059887828:::ffff:127.0.0.1 POST: /api/login
+
+1738059903736:::ffff:127.0.0.1 GET: /api/countries
+
+1738059951376:::ffff:127.0.0.1 POST: /api/register
+
+1738059989308:::1 GET: /assets/appImage/mail_logo2.png
+
+1738060000138:::1 GET: /api/email/verify/6798b0af8630b6ee5d5b4fc5/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OThiMGFmODYzMGI2ZWU1ZDViNGZjNSIsImVtYWlsIjoiYmthcmFuQHRyeW15YmVzdC5jby5pbiIsImlhdCI6MTczODA1OTk1MSwiZXhwIjoxNzM4MTQ2MzUxfQ.XszXoQ-M2kY-o7VddpI4Ps9jHW7ORLO-AlmkGwBFips
+
+1738060008826:::ffff:127.0.0.1 POST: /api/login
+
+1738060008977:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738060008987:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738060055015:::ffff:127.0.0.1 POST: /api/logout
+
+1738060059359:::ffff:127.0.0.1 POST: /api/login
+
+1738060059444:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738060059455:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738060067390:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1738060080967:::ffff:127.0.0.1 POST: /api/cpanel/savedMedicine
+
+1738060083812:::ffff:127.0.0.1 GET: /api/cpanel/med/6798b1308630b6ee5d5b4fe0
+
+1738060090352:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738060264700:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738060592994:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738060850331:::ffff:127.0.0.1 GET: /api/cpanel/med/6798b1308630b6ee5d5b4fe0
+
+1738060852843:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738060856143:::ffff:127.0.0.1 GET: /api/cpanel/med/6798b1308630b6ee5d5b4fe0
+
+1738060863871:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738060877527:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738060914155:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738060914210:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1738061180393:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738061180428:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1738061189111:::ffff:127.0.0.1 POST: /api/cpanel/savedMedicine
+
+1738061193114:::ffff:127.0.0.1 GET: /api/cpanel/med/6798b1308630b6ee5d5b4fe0
+
+1738061208470:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738061517519:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738061517573:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1738061528542:::ffff:127.0.0.1 GET: /api/cpanel/med/6798b1308630b6ee5d5b4fe0
+
+1738061549196:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738061557699:::ffff:127.0.0.1 POST: /api/cpanel/savedMedicine
+
+1738061563438:::ffff:127.0.0.1 GET: /api/cpanel/med/6798b6f5bbfa78d3d0680280
+
+1738061573236:::ffff:127.0.0.1 POST: /api/cpanel/updateMed
+
+1738061586613:::ffff:127.0.0.1 POST: /api/cpanel/savedMedicine
+
+1738061589245:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1738061590327:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1738061591021:::ffff:127.0.0.1 GET: /api/cpanel/medicines
