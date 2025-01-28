@@ -36,7 +36,7 @@ const sendEmailVerificationNotification = async (user, res) => {
 
     // Dynamically construct image URL
     // const imageUrl = `${process.env.APP_URL}/assets/appImage/mail_logo.jpg`;
-    const imageUrl = `${process.env.APP_URL}/assets/appImage/mail_logo.png`;
+    const imageUrl = `${process.env.APP_URL}/assets/appImage/mail_logo2.png`;
 
     // Read email template asynchronously
     const templatePath = path.join(__dirname, '..', 'templates', 'EmailVerification.html');

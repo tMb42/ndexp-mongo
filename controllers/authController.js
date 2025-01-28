@@ -62,16 +62,6 @@ exports.signUp = async (req, res) => {
     // Step 6: Send email for verification
     await sendEmailVerificationNotification(user, res);
 
-    // Step 7: Fetch the user and populate roles
-    const populatedUser = await User.findById(user._id).populate('roles');
-
-    // Step 8: Format the user data using UserResource
-    const userResource = new UserResource(populatedUser);
-    return res.status(201).json({
-      success: 1,
-      message: 'User registered successfully! Verification email sent.',
-      user: userResource.toJSON(),
-    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({

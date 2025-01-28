@@ -5452,3 +5452,73 @@
 1737988824140:::ffff:127.0.0.1 GET: /api/userDetails
 
 1737988834612:::ffff:127.0.0.1 POST: /api/logout
+
+1738000953137:::ffff:127.0.0.1 POST: /api/login
+
+1738000976250:::ffff:127.0.0.1 POST: /api/login
+
+1738000986421:::ffff:127.0.0.1 POST: /api/login
+
+1738001045049:::ffff:127.0.0.1 POST: /api/login
+
+1738035538087:::ffff:127.0.0.1 POST: /api/login
+
+1738035538313:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738035538336:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738037525073:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738037525093:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738037526837:::ffff:127.0.0.1 POST: /api/logout
+
+1738037596614:::ffff:127.0.0.1 POST: /api/login
+
+1738037629169:::ffff:127.0.0.1 GET: /api/countries
+
+1738038863344:::ffff:127.0.0.1 POST: /api/register
+
+1738039150484:::1 GET: /api/email/verify/67985e4f7041a007d89c16fa/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OTg1ZTRmNzA0MWEwMDdkODljMTZmYSIsImVtYWlsIjoiYmthcmFuQHRyeW15YmVzdC5jby5pbiIsImlhdCI6MTczODAzODg2MywiZXhwIjoxNzM4MTI1MjYzfQ.BiK76Q5lvMEicQ1VheFhYcxIUeDZCETVSUejwZjFARc
+
+1738039182918:::ffff:127.0.0.1 POST: /api/login
+
+1738039183050:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738039183067:::ffff:127.0.0.1 GET: /api/userDetails
+
+1738039433862:::ffff:127.0.0.1 POST: /api/logout
+
+1738039435249:::ffff:127.0.0.1 GET: /api/countries
+
+1738039467109:::ffff:127.0.0.1 POST: /api/register
+
+1738039486885:::ffff:127.0.0.1 POST: /api/register
+
+1738039542228:::ffff:127.0.0.1 GET: /api/countries
+
+1738039567651:::ffff:127.0.0.1 POST: /api/register
+
+1738039577312:::ffff:127.0.0.1 POST: /api/register
+
+1738039588346:::ffff:127.0.0.1 POST: /api/register
+
+1738039609589:::ffff:127.0.0.1 POST: /api/register
+
+1738039641921:::ffff:127.0.0.1 GET: /api/countries
+
+1738039685414:::ffff:127.0.0.1 POST: /api/register
+
+1738039979172:::ffff:127.0.0.1 GET: /api/countries
+
+1738040010623:::ffff:127.0.0.1 POST: /api/register
+
+1738040237826:::ffff:127.0.0.1 GET: /api/countries
+
+1738040266721:::ffff:127.0.0.1 POST: /api/register
+
+1738040389305:::ffff:127.0.0.1 GET: /api/countries
+
+1738040413927:::ffff:127.0.0.1 POST: /api/register
+
+1738040419441:::ffff:127.0.0.1 POST: /api/register
