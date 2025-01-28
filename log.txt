@@ -6292,3 +6292,55 @@
 1738077110652:::ffff:127.0.0.1 GET: /api/userDetails
 
 1738077110710:::ffff:127.0.0.1 GET: /api/cpanel/medicines
+
+1738085109687:::ffff:127.0.0.1 POST: /api/logout
+
+1738085113262:::ffff:127.0.0.1 GET: /api/countries
+
+1738085168235:::ffff:127.0.0.1 POST: /api/register
+
+1738085193615:::ffff:127.0.0.1 POST: /api/register
+
+1738085232828:::ffff:127.0.0.1 POST: /api/register
+
+1738085280471:::ffff:127.0.0.1 POST: /api/register
+
+1738085293504:::ffff:127.0.0.1 POST: /api/register
+
+1738085495086:::ffff:127.0.0.1 POST: /api/register
+
+1738085561071:::ffff:127.0.0.1 POST: /api/register
+
+1738085693530:::ffff:127.0.0.1 POST: /api/register
+
+1738085894003:::ffff:127.0.0.1 POST: /api/register
+
+1738085953942:::ffff:127.0.0.1 POST: /api/register
+
+1738085966965:::ffff:127.0.0.1 POST: /api/register
+
+1738085979721:::ffff:127.0.0.1 POST: /api/register
+
+1738086057683:::ffff:127.0.0.1 POST: /api/register
+
+1738086154699:::ffff:127.0.0.1 POST: /api/register
+
+1738086203409:::ffff:127.0.0.1 POST: /api/register
+
+1738086244786:::ffff:127.0.0.1 POST: /api/register
+
+1738086344792:::ffff:127.0.0.1 POST: /api/register
+
+1738086574214:::ffff:127.0.0.1 POST: /api/register
+
+1738086647961:::1 GET: /api/email/verify/679918aec31776e17605db17/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OTkxOGFlYzMxNzc2ZTE3NjA1ZGIxNyIsImVtYWlsIjoiYmlwbGFia2FyYW5AZ21haWwuY29tIiwiaWF0IjoxNzM4MDg2NTc0LCJleHAiOjE3MzgxNzI5NzR9.QWRpTXiPBELqJPAOwOH9quOT_65S_tym2T3Z6mYfMfE
+
+1738086680131:::ffff:127.0.0.1 GET: /api/countries
+
+1738086832673:::ffff:127.0.0.1 POST: /api/register
+
+1738086874046:::1 GET: /api/email/verify/679919b0e5665d4e0bc2869d/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OTkxOWIwZTU2NjVkNGUwYmMyODY5ZCIsImVtYWlsIjoidHJ5bXliZXN0NDI0NUBnbWFpbC5jb20iLCJpYXQiOjE3MzgwODY4MzIsImV4cCI6MTczODE3MzIzMn0.X7t5TbDVGhggf_4zSOxjyfvH-_ah5hnABGCp6d_2J2g
+
+1738086971032:::ffff:127.0.0.1 GET: /api/countries
+
+1738086995067:::ffff:127.0.0.1 POST: /api/register
