@@ -115,55 +115,35 @@ exports.getMedicineDetailsById = async (req, res) => {
 
 exports.updateMedicineById = async (req, res) => {
   try {
-    const { 
-      _id, 
-      medName = '', 
-      kingdom = '', 
-      family = '', 
-      miasm = '', 
-      temperament = '', 
-      diathisis = '', 
-      thermalReaction = '', 
-      personility = '', 
-      notes = null, 
-      remarks = null 
-    } = req.body;
+    const {medName, kingdom, family, miasm, temperament, diathisis, thermalReaction, personility, notes, remarks } = req.body;
+    
+    const updateData = {};
+    
+    if (medName) updateData.medName = capitalizeWords(medName);
+    updateData.kingdom = splitByCommaAndCapitalize(kingdom);
+    updateData.family = splitByCommaAndCapitalize(family);
+    updateData.miasm = splitByCommaAndCapitalize(miasm);
+    updateData.temperament = splitByCommaAndCapitalize(temperament);
+    updateData.diathisis = splitByCommaAndCapitalize(diathisis);
+    updateData.thermalReaction = splitByCommaAndCapitalize(thermalReaction);
+    updateData.personility = splitByCommaAndCapitalize(personility);
+    updateData.notes =sentenceCase(notes);
+    updateData.remarks = sentenceCase(remarks);
 
-    const splitByCommaAndCapitalize = (field) => {
-      if (!field || typeof field !== 'string') return [];
-      return field.split(',').map(item => capitalizeWords(item.trim()));
-    };
-
-    const updateData = {
-      medName: capitalizeWords(medName),
-      kingdom: splitByCommaAndCapitalize(kingdom), 
-      family: splitByCommaAndCapitalize(family),
-      miasm: splitByCommaAndCapitalize(miasm), 
-      temperament: splitByCommaAndCapitalize(temperament), 
-      diathisis: splitByCommaAndCapitalize(diathisis), 
-      thermalReaction: splitByCommaAndCapitalize(thermalReaction), 
-      personility: splitByCommaAndCapitalize(personility), 
-      notes: notes ? sentenceCase(notes) : null, 
-      remarks: remarks ? sentenceCase(remarks) : null, 
-    };
-
-    const updatedMedicine = await Medicine.findByIdAndUpdate(_id, updateData, { new: true });
-
+    // Use findByIdAndUpdate to update the medicine document
+    const updatedMedicine = await Medicine.findByIdAndUpdate({ _id: req.body._id }, updateData, { new: true });
     if (!updatedMedicine) {
-      return res.status(404).json({ success: 0, message: 'Medicine not found' });
+      return res.status(404).json({ message: 'Medicine not found' });
     }
-
-    return res.status(200).json({
+    res.status(200).json({
       success: 1,
-      message: 'Medicine updated successfully',
-      updatedMedicine,
+      updatedMedicine: updatedMedicine,
+      message: 'Medicine update successfully!',
     });
+    
   } catch (error) {
     console.error('Error updating medicine:', error);
-    return res.status(500).json({
-      success: 0,
-      message: 'An error occurred while updating the medicine',
-    });
+    res.status(500).json({ message: 'An error occurred while updating', error });
   }
 };
 

@@ -62,6 +62,18 @@ function toLowerCase(str) {
   }
 }
 
+
+
+const splitByCommaAndCapitalize = (field) => {
+  if (field && typeof field === 'string') {
+    return field.split(',').map(item => capitalizeWords(item.trim()));
+  } else if (Array.isArray(field)) {
+    return field.map(item => capitalizeWords(item)); // Handle array directly
+  }
+  return [];
+};
+
+
 // Attach all functions to the global object
 global.capitalizeWords = capitalizeWords;
 global.sentenceCase = sentenceCase;
@@ -70,3 +82,4 @@ global.toSnakeCase = toSnakeCase;
 global.toKebabCase = toKebabCase;
 global.toUpperCase = toUpperCase;
 global.toLowerCase = toLowerCase;
+global.splitByCommaAndCapitalize = splitByCommaAndCapitalize;
