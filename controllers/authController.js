@@ -259,9 +259,8 @@ exports.updateUserProfile = async (req, res) => {
       updateData.$set.mobile_no = mobile;
       updateData.$push = { mobile_nos_previous: user.mobile_no };
     }
-
     const updatedUser = await User.findOneAndUpdate(
-      { _id: req.user._id },
+      {_id: req.user._id },
       updateData,
       { new: true }
     ).populate('roles');

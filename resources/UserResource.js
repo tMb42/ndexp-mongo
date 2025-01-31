@@ -1,4 +1,4 @@
-const { formatDate, calculateAge } = require('../helper/dateHelper');
+const { formatDate, TimeDifference } = require('../helper/dateHelper');
 
 class UserResource {
 
@@ -21,8 +21,9 @@ class UserResource {
       aboutMe
     } = this.user;
 
+    const safeName = name ? name.trim() : ''; 
    // Split the full name into first, middle, and last names using regex
-   const splitName = name.trim().split(/\s+/); // Split by one or more spaces
+   const splitName = safeName.trim().split(/\s+/); // Split by one or more spaces
    let first_name = '';
    let middle_name = '';
    let last_name = '';
@@ -45,8 +46,8 @@ class UserResource {
     let countryCode = null;
     let localNumber = mobileNumber;
     // Ensure mobile number is defined and contains a space
-    if (mobileNumber && mobileNumber.includes(' ')) {
-      const splitMobileNo = mobileNumber.split(' ');
+    if (mobileNumber && mobileNumber.includes(" ")) {
+      const splitMobileNo = mobileNumber.split(" ");
       // Check if the first part starts with '+', treat it as the country code
       if (splitMobileNo[0] && splitMobileNo[0].startsWith('+')) {
         countryCode = splitMobileNo[0];
@@ -65,19 +66,24 @@ class UserResource {
       })) : [];
 
     // Extract only the 'name' field from the roles
-    const roles = this.user.roles ? this.user.roles.map((y) => y.name) : [];
+    const roles = this.user.roles ? this.user.roles.map((x) => x.name) : [];
+    // Extract only the 'label' field from the roles
+     const roleLabels = this.user.roles ? 
+     this.user.roles.map((role) => role.label).filter(Boolean) : [];
+    
+    // Date formatting (dob)
+    const formatDob = (dob) => {
+      return dob ? new Intl.DateTimeFormat('en-GB', {
+        weekday: 'long', 
+        day: '2-digit',  
+        month: 'short',  
+        year: 'numeric'  
+      }).format(new Date(dob)) : null;
+    };
 
-
+    const dobFormatted = formatDob(dob);
     // Get raw dob (SQL format)
     const dobSQL = dob;
-
-    // Format the dob to a readable string (e.g., "Tuesday, 31 Dec 2024")
-    const dobFormatted = new Intl.DateTimeFormat('en-GB', {
-      weekday: 'long', // Day of the week (e.g., Monday)
-      day: '2-digit',  // Day of the month (01-31)
-      month: 'short',  // Abbreviated month (e.g., Dec)
-      year: 'numeric'  // Year (e.g., 2024)
-    }).format(new Date(dob));
 
     return {
       id,
@@ -91,10 +97,11 @@ class UserResource {
       updated_at: formatDate(updated_at),
       roleId: roleDetails, // Full role details
       roles, // Only role names
+      roleLabels,
       gender,
       dobSQL: dobSQL, // Raw DOB (SQL format)
       dob: dobFormatted, // Formatted DOB (e.g., "Tuesday, 31 Dec 2024")
-      age: calculateAge(dob),
+      age: TimeDifference(dob),
       countryCode,
       localNumber,
       mobile: mobile_no,
