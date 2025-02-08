@@ -147,7 +147,6 @@ exports.updateMedicineById = async (req, res) => {
   }
 };
 
-
 // Search medicine details
 exports.searchMedicineDetails = async (req, res) => {
   try {

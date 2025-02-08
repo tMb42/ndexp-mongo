@@ -1,8 +1,10 @@
-const { formatDate, TimeDifference } = require('../helper/dateHelper');
+const { formatDate, formatOnlyDate, TimeDifference, calculateAge } = require('../helper/dateHelper');
 
-class UserResource {
-
-  constructor(user) {this.user = user;}
+class UserResource {  
+  constructor(user, appointments = []) {
+    this.user = user;
+    this.appointments = Array.isArray(appointments) ? appointments : [];
+  }
 
   toJSON() {
     const {
@@ -21,7 +23,9 @@ class UserResource {
       aboutMe
     } = this.user;
 
-    const safeName = name ? name.trim() : ''; 
+    
+
+  const safeName = name ? name.trim() : ''; 
    // Split the full name into first, middle, and last names using regex
    const splitName = safeName.trim().split(/\s+/); // Split by one or more spaces
    let first_name = '';
@@ -84,6 +88,32 @@ class UserResource {
     const dobFormatted = formatDob(dob);
     // Get raw dob (SQL format)
     const dobSQL = dob;
+    const patientNameAge = `${name} (${calculateAge(dob)})`;
+
+    // Dynamically extract all fields from each appointment
+    const formattedAppointments = this.appointments.map(app => {
+      const formattedApp = { ...app.toObject(), id: app._id };
+
+      // Format appointment-specific date fields
+      if (formattedApp.appointmentDate) {
+        formattedApp.appointmentDate = formatOnlyDate(formattedApp.appointmentDate);
+      }
+      if (formattedApp.createdAt) {
+        formattedApp.createdAt = formatDate(formattedApp.createdAt);
+      }
+      if (formattedApp.updatedAt) {
+        formattedApp.updatedAt = formatDate(formattedApp.updatedAt);
+      }
+
+      return formattedApp;
+    });
+
+    const dynamicAppointments = this.appointments.map(app => {
+      return Object.keys(app.toObject()).map(key => {
+        const value = app[key];
+        return `${key}: ${value}`;
+      }).join(', ');
+    }).join('; ') || 'No appointments available';
 
     return {
       id,
@@ -102,15 +132,19 @@ class UserResource {
       dobSQL: dobSQL, // Raw DOB (SQL format)
       dob: dobFormatted, // Formatted DOB (e.g., "Tuesday, 31 Dec 2024")
       age: TimeDifference(dob),
+      patientNameAge,
       countryCode,
       localNumber,
       mobile: mobile_no,
       display,
       inforce,
       remarks,
-      aboutMe
+      aboutMe,
+      appointments: formattedAppointments,
+      appointmentsInfo: dynamicAppointments
     };
   }
 }
 
 module.exports = UserResource;
+ 

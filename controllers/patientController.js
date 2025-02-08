@@ -1,6 +1,7 @@
 const Patient = require('../models/patient');
 const User = require('../models/user');
 const Role = require('../models/role');
+const CaseHistory = require('../models/casehistory');
 const Appointment = require('../models/appointment');
 const PatientResource = require('../resources/PatientResource');
 const { formatDate, calculateAge } = require('../helper/dateHelper');
@@ -158,90 +159,6 @@ exports.getAllDoctors = async (req, res) => {
   }
 };
 
-// exports.getAllPatients = async (req, res) => {
-//   try {
-//     const patientRole = await Role.findOne({ name: 'patient' });
-
-//     if (!patientRole) {
-//       return res.status(404).json({
-//         success: 0,
-//         message: 'Patient role not found.',
-//       });
-//     }
-
-//     const patientsWithAppointments = await User.aggregate([
-//       {
-//         $match: { roles: patientRole._id } // Filter users with the "patient" role
-//       },
-//       {
-//         $lookup: {
-//           from: 'appointments',  
-//           localField: '_id',   
-//           foreignField: 'patientId', 
-//           as: 'appointments'   
-//         }
-//       },
-//       {
-//         $unwind: { path: "$appointments", preserveNullAndEmptyArrays: true } // Flatten appointments
-//       },
-//       {
-//         $project: {
-//           // User details (patient)
-//           patientId: "$_id",
-//           name: 1,
-//           email: 1,
-//           mobile_no: 1,
-//           dob: 1,
-//           gender: 1,
-//           inforce: 1,
-//           display: 1,
-//           remarks: 1,
-//           created_at: 1,
-//           updated_at: 1,
-//           aboutMe: 1,
-    
-//           // Appointment details
-//           appointment_id: "$appointments._id",
-//           appointment_date: "$appointments.appointmentDate",
-//           appointment_time: "$appointments.appointmentTime",
-//           appointment_status: "$appointments.status",
-//           reasonForVisit: "$appointments.reasonForVisit",
-//           diagnosis: "$appointments.diagnosis",
-    
-//           // Doctor details within the appointment (populated)
-//           doctorId: "$appointments.doctorId",
-//           doctorName: "$appointments.doctorDetails.name", // Nested doctor details
-//           doctorEmail: "$appointments.doctorDetails.email",
-//           doctorMobile_no: "$appointments.doctorDetails.mobile_no",
-//           doctorPhoto: "$appointments.doctorDetails.photo"
-//         }
-//       }
-
-//     ]);
-
-//     // // Format data using both UserResource and PatientResource
-//     const formattedData = patientsWithAppointments.map(patient => {
-//       const userResource = new UserResource(patient).toJSON();
-//       const patientResource = new PatientResource(patient).toJSON();
-
-//       return { ...userResource, ...patientResource };
-//     });
-
-//     return res.status(200).json({
-//       success: 1,
-//       patientsData: formattedData
-//     });
-
-//   } catch (error) {
-//     console.error('Error fetching patient data:', error);
-//     return res.status(500).json({
-//       success: 0,
-//       message: 'An error occurred while fetching patient data.',
-//     });
-//   }
-// }
-
-// Function to fetch all users with "patient" role
 exports.getAllPatients = async (req, res) => {
   try {
     const patientRole = await Role.findOne({ name: 'patient' });
@@ -252,13 +169,21 @@ exports.getAllPatients = async (req, res) => {
         message: 'Patient role not found.',
       });
     }
-    const patients = await User.find({ roles: patientRole._id }).populate('roles');
-   
+
+    // Fetch patients and populate roles + appointments
+    const patients = await User.find({ roles: patientRole._id })
+    .populate('roles')
+    .populate('appointments');
+    
+    // Map each patient with their respective appointments
+    const formattedPatients = patients.map(patient => {
+      return new UserResource(patient, patient.appointments).toJSON();
+    });
+
     res.json({
       success: 1,
-      patientsData: new UserCollection(patients).toJSON() // Format user details using UserCollection    
+      patientsData: formattedPatients  
     });
-    
 
   } catch (error) {
     console.error('Error fetching patient data:', error);
@@ -268,6 +193,42 @@ exports.getAllPatients = async (req, res) => {
     });
   }
 };
+
+exports.getAllSeduledPatients = async (req, res) => {
+  try {
+    const patientRole = await Role.findOne({ name: 'patient' });
+
+    if (!patientRole) {
+      return res.status(404).json({
+        success: 0,
+        message: 'Patient role not found.',
+      });
+    }
+
+    // Fetch patients and populate roles + appointments
+    const patients = await User.find({ roles: patientRole._id })
+    .populate('roles')
+    .populate('appointments');
+    
+    // Map each patient with their respective appointments
+    const formattedPatients = patients.map(patient => {
+      return new UserResource(patient, patient.appointments).toJSON();
+    });
+
+    res.json({
+      success: 1,
+      patientsData: formattedPatients  
+    });
+
+  } catch (error) {
+    console.error('Error fetching patient data:', error);
+    return res.status(500).json({
+      success: 0,
+      message: 'An error occurred while fetching patient data.',
+    });
+  }
+};
+
 
 exports.getAllPatientDetails = async (req, res) => {
   try {
@@ -312,3 +273,138 @@ exports.getAllPatientDetails = async (req, res) => {
     });
   }
 };
+
+exports.savePatientsCaseHistory = async (req, res) => {
+  try {
+    const {
+      patientId,
+      doctorId,
+      visitDate,
+      symptoms,
+      diagnosis,
+      treatment,
+      prescription,
+      notes,
+      followUpDate,
+    } = req.body;
+
+    // Parse symptoms if it's a JSON string
+    let parsedSymptoms = symptoms;
+    if (typeof symptoms === 'string') {
+      try {
+        parsedSymptoms = JSON.parse(symptoms);
+      } catch (error) {
+        return res.status(400).json({
+          success: 0,
+          message: 'Invalid JSON format for symptoms.',
+        });
+      }
+    }
+
+    // Ensure symptoms is an array
+    if (!Array.isArray(parsedSymptoms)) {
+      return res.status(400).json({
+        success: 0,
+        message: 'Symptoms must be an array.',
+      });
+    }
+
+    // Create a new CaseHistory document
+    const newCaseHistory = new CaseHistory({
+      patientId,
+      doctorId,
+      visitDate: visitDate || Date.now(),
+      symptoms: parsedSymptoms, // Save parsed symptoms
+      diagnosis,
+      treatment,
+      prescription,
+      notes,
+      followUpDate,
+    });
+
+    // Save to MongoDB
+    const savedCaseHistory = await newCaseHistory.save();
+    
+    const caseHistories = await CaseHistory.find({ patientId }) // Fetch case histories for the given patientId
+      .populate('doctorId', 'name') // Populate doctor information
+      .sort({ createdAt: -1 }); // Sort by date descending
+
+    
+    res.status(201).json({
+      success: 1,
+      message: 'Case history saved successfully.',
+      CaseHistoryData: caseHistories,
+    });
+  } catch (error) {
+    console.error('Error saving case history:', error);
+    res.status(500).json({
+      success: 0,
+      message: 'Failed to save case history.',
+      error: error.message,
+    });
+  }
+};
+
+exports.getPatientsAllCaseHistory = async (req, res) => {
+  const { patientId } = req.body; // Extract patientId from the payload
+
+  if (!patientId) {
+    return res.status(400).json({ success: 0, message: 'Patient ID is required' });
+  }
+
+  try {
+    const caseHistories = await CaseHistory.find({ patientId }) // Fetch case histories for the given patientId
+      .populate('doctorId', 'name') // Populate doctor information
+      .sort({ createdAt: -1 }); // Sort by date descending
+
+    res.status(200).json({ 
+      success: 1, 
+      CaseHistoryData: caseHistories, // Return the array of case histories directly
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: 0, 
+      message: error.message 
+    });
+  }
+};
+
+// exports.getpatientsAllCaseHistory = async (req, res) => {
+
+//   const { patientId } = req.body; // Extract patientId from the payload
+//     if (!patientId) {
+//       return res.status(400).json({ success: 0, message: 'Patient ID is required' });
+//     }
+
+//     try {
+//       const caseHistories = await CaseHistory.find({ patientId }) // Fetch case histories for the given patientId
+//         .populate('doctorId', 'name') // Assuming there's a doctorId reference
+//         .sort({ createdAt: -1 }); // Sort by date descending
+
+//       const groupedData = groupBy(caseHistories, (item) => {
+//         const data = new Date(item.createdAt).toLocaleDateString();
+//         return `${data}-${item.doctorId.name}`;
+//       });
+
+//       res.status(200).json({ 
+//         success: 1, CaseHistoryData: groupedData 
+//       });
+//     } catch (error) {
+//       res.status(500).json({ 
+//         success: 0, 
+//         message: error.message 
+//       });
+//     }
+// }
+
+// function groupBy(array, keyFunction) {
+//   return array.reduce((result, item) => {
+//     const key = keyFunction(item);
+//     if (!result[key]) {
+//       result[key] = [];
+//     }
+//     result[key].push(item);
+//     return result;
+//   }, {});
+
+// }

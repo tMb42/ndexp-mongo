@@ -14,6 +14,9 @@ router.route('/check-conflict').post(verifyToken, patientClr.updateAppointmentSt
 router.route('/patients').get(verifyToken, patientClr.getAllPatientDetails);
 router.route('/doctors').get(verifyToken, patientClr.getAllDoctors);
 router.route('/ptns').get(verifyToken, patientClr.getAllPatients);
+router.route('/scheduledPtns').post(verifyToken, patientClr.getAllSeduledPatients);
+router.route('/savedCaseHistory').post(verifyToken, patientClr.savePatientsCaseHistory);
+router.route('/caseHistories').post(verifyToken, patientClr.getPatientsAllCaseHistory);
 
 
 
