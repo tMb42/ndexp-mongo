@@ -81,6 +81,7 @@ class PatientResource {
         patientAge: calculateAge(dob),
         // Doctor data
         doctorId: doctorId ? doctorId._id : null,
+        doctorName: doctorId.name 
     };
   }
 } 

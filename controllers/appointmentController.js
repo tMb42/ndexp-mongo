@@ -177,6 +177,8 @@ exports.getAllAppointments = async (req, res) => {
     const total_appointments = await Appointment.countDocuments({ patientId: { $in: patients.map(pt => pt._id) } });
     const total_pages = Math.ceil(total_appointments / itemsPerPage);
 
+    console.log(appointments.map(x => new PatientResource(x).toJSON()));
+    
     // Response
     return res.status(200).json({
       success: 1,

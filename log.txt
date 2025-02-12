@@ -20524,3 +20524,73 @@
 1739298719708:::ffff:127.0.0.1 POST: /api/caseHistories
 
 1739298728390:::ffff:127.0.0.1 POST: /api/caseHistories
+
+1739330760806:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330760867:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330764334:::ffff:127.0.0.1 GET: /api/patients
+
+1739330764335:::ffff:127.0.0.1 GET: /api/appointment
+
+1739330777247:::ffff:127.0.0.1 POST: /api/logout
+
+1739330782290:::ffff:127.0.0.1 POST: /api/login
+
+1739330782382:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330782389:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330785368:::ffff:127.0.0.1 GET: /api/ptns
+
+1739330785382:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330785490:::ffff:127.0.0.1 POST: /api/scheduledPtns
+
+1739330785490:::ffff:127.0.0.1 POST: /api/nonSchPtns
+
+1739330792388:::ffff:127.0.0.1 POST: /api/caseHistories
+
+1739330795231:::ffff:127.0.0.1 POST: /api/logout
+
+1739330804051:::ffff:127.0.0.1 POST: /api/login
+
+1739330804131:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330804137:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330805623:::ffff:127.0.0.1 GET: /api/doctors
+
+1739330805630:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739330810501:::ffff:127.0.0.1 POST: /api/bookedSlot
+
+1739331380749:::ffff:127.0.0.1 POST: /api/logout
+
+1739331384890:::ffff:127.0.0.1 POST: /api/login
+
+1739331384992:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739331385000:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739331386416:::ffff:127.0.0.1 GET: /api/patients
+
+1739331386417:::ffff:127.0.0.1 GET: /api/appointment
+
+1739331730050:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739331730098:::ffff:127.0.0.1 GET: /api/patients
+
+1739331730104:::ffff:127.0.0.1 GET: /api/appointment
+
+1739331885996:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739331886040:::ffff:127.0.0.1 GET: /api/patients
+
+1739331886040:::ffff:127.0.0.1 GET: /api/appointment
+
+1739332013887:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739332013935:::ffff:127.0.0.1 GET: /api/patients
+
+1739332013938:::ffff:127.0.0.1 GET: /api/appointment
