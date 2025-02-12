@@ -75,17 +75,25 @@ const userSchema = new mongoose.Schema({
     },
     roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }]
     
-}, 
-{
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-});
+    }, 
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    }
+);
 
 // Virtual field to populate appointments
 userSchema.virtual('appointments', {
     ref: 'Appointment',   // Reference the Appointment model
     localField: '_id',    // Match _id of User
     foreignField: 'patientId', // Field in Appointment referencing User
+});
+  
+// Virtual field to populate appointments
+userSchema.virtual('patients', {
+    ref: 'Patient',   // Reference the Appointment model
+    localField: '_id',    // Match _id of User
+    foreignField: 'userId', // Field in Appointment referencing User
 });
   
 // Virtual property for full photo URL

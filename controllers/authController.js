@@ -326,30 +326,3 @@ const parseDuration = (duration) => {
   }
 };
 
-// exports.getAllDoctors = async (req, res) =>{
-//   try {
-//     const doctors = await User.find(); 
-//     const doctorsData = doctors.map((dr) => ({
-//       id: dr._id,
-//       doctor_name: dr.name, 
-//       display: dr.display, 
-//       inforce: dr.inforce, 
-//       remarks: dr.remarks,  
-//       created_at: dr.created_at,  
-//       updated_at: dr.updated_at, 
-//     }));
-
-//     // Return the data in the required format
-//     res.json({
-//       doctorsData
-//     });
-    
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({ 
-//       status: 'error',
-//       message: 'Error fetching doctors',
-//       error: err.message
-//     });
-//   }
-// }

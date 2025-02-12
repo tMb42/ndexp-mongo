@@ -1,12 +1,17 @@
 const { formatDate, formatOnlyDate, TimeDifference, calculateAge } = require('../helper/dateHelper');
 
 class UserResource {  
-  constructor(user, appointments = []) {
+  constructor(user, patients = [], appointments = []) {
     this.user = user;
+    this.patients = Array.isArray(patients) ? patients : [];
     this.appointments = Array.isArray(appointments) ? appointments : [];
   }
 
   toJSON() {
+    if (!this.user) {
+      console.error("User object is missing or invalid.");
+      return null; // Early return if user is not valid
+    }
     const {
       id,
       name,
@@ -90,6 +95,11 @@ class UserResource {
     const dobSQL = dob;
     const patientNameAge = `${name} (${calculateAge(dob)})`;
 
+    // Extract addlInfo from the populated patients array
+    const addlInfo = this.patients
+      .map((patient) => patient.addlInfo)
+      .flat()
+
     // Dynamically extract all fields from each appointment
     const formattedAppointments = this.appointments.map(app => {
       const formattedApp = { ...app.toObject(), id: app._id };
@@ -108,12 +118,12 @@ class UserResource {
       return formattedApp;
     });
 
-    const dynamicAppointments = this.appointments.map(app => {
-      return Object.keys(app.toObject()).map(key => {
-        const value = app[key];
-        return `${key}: ${value}`;
-      }).join(', ');
-    }).join('; ') || 'No appointments available';
+    // const dynamicAppointments = this.appointments.map(app => {
+    //   return Object.keys(app.toObject()).map(key => {
+    //     const value = app[key];
+    //     return `${key}: ${value}`;
+    //   }).join(', ');
+    // }).join('; ') || 'No appointments available';
 
     return {
       id,
@@ -140,8 +150,9 @@ class UserResource {
       inforce,
       remarks,
       aboutMe,
+      addlInfo,
       appointments: formattedAppointments,
-      appointmentsInfo: dynamicAppointments
+      // appointmentsInfo: dynamicAppointments
     };
   }
 }

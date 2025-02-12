@@ -80,6 +80,24 @@ function formatOnlyDate(date) {
 
     return `${years} years`; // Return age in years
 }
+/**
+ * Get the start and end of a date range for a given date.
+ * @param {Date|string} date - The input date (defaults to today).
+ * @returns {Object} An object with `start` and `end` properties.
+ */
+function getDateRange(date = new Date()) {
+  // Convert the input to a Date object
+  const d = new Date(date);
 
-module.exports = { formatDate, formatOnlyDate, calculateAge, TimeDifference };
+  // Calculate the start of the day (00:00:00.000)
+  const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+
+  // Calculate the end of the day (23:59:59.999)
+  const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
+  return { start, end };
+}
+
+
+module.exports = { formatDate, formatOnlyDate, calculateAge, TimeDifference, getDateRange };
   
