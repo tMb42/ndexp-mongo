@@ -20594,3 +20594,15 @@
 1739332013935:::ffff:127.0.0.1 GET: /api/patients
 
 1739332013938:::ffff:127.0.0.1 GET: /api/appointment
+
+1739333945117:::ffff:127.0.0.1 POST: /api/login
+
+1739333945283:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739333945294:::ffff:127.0.0.1 GET: /api/userDetails
+
+1739333952790:::ffff:127.0.0.1 GET: /api/patients
+
+1739333952792:::ffff:127.0.0.1 GET: /api/appointment
+
+1739335424076:::ffff:127.0.0.1 POST: /api/logout
