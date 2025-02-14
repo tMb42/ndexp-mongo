@@ -25,7 +25,7 @@ class UserResource {
       display,
       inforce,
       remarks,
-      aboutMe
+      aboutMe,
     } = this.user;
 
     
@@ -50,35 +50,35 @@ class UserResource {
      }
     }
 
-    // Split the mobile number (country code and local number)
-    const mobileNumber = mobile_no;
-    let countryCode = null;
-    let localNumber = mobileNumber;
-    // Ensure mobile number is defined and contains a space
-    if (mobileNumber && mobileNumber.includes(" ")) {
-      const splitMobileNo = mobileNumber.split(" ");
-      // Check if the first part starts with '+', treat it as the country code
-      if (splitMobileNo[0] && splitMobileNo[0].startsWith('+')) {
-        countryCode = splitMobileNo[0];
-        localNumber = splitMobileNo[1] || null;
-      }
-    } else {
-      console.warn("Mobile number is not in the expected format or is missing.");
+  // Split the mobile number (country code and local number)
+  const mobileNumber = mobile_no;
+  let countryCode = null;
+  let localNumber = mobileNumber;
+  // Ensure mobile number is defined and contains a space
+  if (mobileNumber && mobileNumber.includes(" ")) {
+    const splitMobileNo = mobileNumber.split(" ");
+    // Check if the first part starts with '+', treat it as the country code
+    if (splitMobileNo[0] && splitMobileNo[0].startsWith('+')) {
+      countryCode = splitMobileNo[0];
+      localNumber = splitMobileNo[1] || null;
     }
+  } else {
+    console.warn("Mobile number is not in the expected format or is missing.");
+  }
 
-    // Map role details from the populated roles array
-    const roleDetails = this.user.roles ? 
-      this.user.roles.map((x) => ({
-        id: x._id,
-        name: x.name,
-        label: x.label,
-      })) : [];
+  // Map role details from the populated roles array
+  const roleDetails = this.user.roles ? 
+    this.user.roles.map((x) => ({
+      id: x._id,
+      name: x.name,
+      label: x.label,
+    })) : [];
 
-    // Extract only the 'name' field from the roles
-    const roles = this.user.roles ? this.user.roles.map((x) => x.name) : [];
-    // Extract only the 'label' field from the roles
-     const roleLabels = this.user.roles ? 
-     this.user.roles.map((role) => role.label).filter(Boolean) : [];
+  // Extract only the 'name' field from the roles
+  const roles = this.user.roles ? this.user.roles.map((x) => x.name) : [];
+  // Extract only the 'label' field from the roles
+  const roleLabels = this.user.roles ? 
+  this.user.roles.map((role) => role.label).filter(Boolean) : [];
     
     // Date formatting (dob)
     const formatDob = (dob) => {
@@ -90,40 +90,37 @@ class UserResource {
       }).format(new Date(dob)) : null;
     };
 
-    const dobFormatted = formatDob(dob);
-    // Get raw dob (SQL format)
-    const dobSQL = dob;
-    const patientNameAge = `${name} (${calculateAge(dob)})`;
+  const dobFormatted = formatDob(dob);
+  // Get raw dob (SQL format)
+  const dobSQL = dob;
+  const patientNameAge = `${name} (${calculateAge(dob)})`;
 
-    // Extract addlInfo from the populated patients array
-    const addlInfo = this.patients
-      .map((patient) => patient.addlInfo)
-      .flat()
+  // Extract addlInfo from the populated patients array
+  const addlInfo = this.patients
+    .map((patient) => patient.addlInfo)
+    .flat()
 
-    // Dynamically extract all fields from each appointment
-    const formattedAppointments = this.appointments.map(app => {
-      const formattedApp = { ...app.toObject(), id: app._id };
+  // Dynamically extract all fields from each appointment
+  const formattedAppointments = this.appointments.map(app => {
+    const formattedApp = { ...app.toObject(), id: app._id };
 
-      // Format appointment-specific date fields
-      if (formattedApp.appointmentDate) {
-        formattedApp.appointmentDate = formatOnlyDate(formattedApp.appointmentDate);
-      }
-      if (formattedApp.createdAt) {
-        formattedApp.createdAt = formatDate(formattedApp.createdAt);
-      }
-      if (formattedApp.updatedAt) {
-        formattedApp.updatedAt = formatDate(formattedApp.updatedAt);
-      }
+    // Format appointment-specific date fields
+    if (formattedApp.appointmentDate) {
+      formattedApp.appointmentDate = formatOnlyDate(formattedApp.appointmentDate);
+    }
+    if (formattedApp.createdAt) {
+      formattedApp.createdAt = formatDate(formattedApp.createdAt);
+    }
+    if (formattedApp.updatedAt) {
+      formattedApp.updatedAt = formatDate(formattedApp.updatedAt);
+    }
 
-      return formattedApp;
-    });
+    return formattedApp;
+  });
 
-    // const dynamicAppointments = this.appointments.map(app => {
-    //   return Object.keys(app.toObject()).map(key => {
-    //     const value = app[key];
-    //     return `${key}: ${value}`;
-    //   }).join(', ');
-    // }).join('; ') || 'No appointments available';
+  const addressInfo = Array.isArray(this.user.address) ? 
+    this.user.address.map((x) => x.address) : [];
+
 
     return {
       id,
@@ -151,6 +148,7 @@ class UserResource {
       remarks,
       aboutMe,
       addlInfo,
+      addressInfo,
       appointments: formattedAppointments,
       // appointmentsInfo: dynamicAppointments
     };

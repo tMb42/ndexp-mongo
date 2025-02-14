@@ -9,8 +9,9 @@ router.route('/create-app').post(verifyToken, appointmentClr.createAppointment);
 router.route('/bookedSlot').post(verifyToken, appointmentClr.getBookedTimeSlot);
 router.route('/appointment').get(verifyToken, appointmentClr.getAllAppointments);
 router.route('/searchBooking').post(verifyToken, appointmentClr.searchBookingDetails);
-router.route('/update-app').put(verifyToken, patientClr.updateAppointmentStatus);
-router.route('/check-conflict').post(verifyToken, patientClr.updateAppointmentStatus);
+router.route('/updateStatus').put(verifyToken, appointmentClr.updateAppointmentStatus);
+// router.route('/update-app').put(verifyToken, patientClr.updateAppointmentStatus);
+// router.route('/check-conflict').post(verifyToken, patientClr.updateAppointmentStatus);
 router.route('/newPatient').post(verifyToken, patientClr.createPatient);
 router.route('/patients').get(verifyToken, patientClr.getAllPatientDetails);
 router.route('/doctors').get(verifyToken, patientClr.getAllDoctors);
@@ -20,6 +21,7 @@ router.route('/nonSchPtns').post(verifyToken, patientClr.getAllNonScheduledPatie
 router.route('/savedCaseHistory').post(verifyToken, patientClr.savePatientsCaseHistory);
 router.route('/caseHistories').post(verifyToken, patientClr.getPatientsAllCaseHistory);
 router.route('/editPatient').put(verifyToken, patientClr.editPatientInformation);
+
 
 
 

@@ -116,7 +116,7 @@ exports.signIn = async (req, res) => {
       ? parseDuration(process.env.JWT_EXPIRES_IN_REMEMBER_ME)  // Convert to seconds
       : parseDuration(process.env.JWT_EXPIRES_IN); // Convert to seconds
 
-    console.log('Parsed tokenExpiresIn in seconds:', tokenExpiresInSecond);
+    
 
     // Generate JWT token
     const jwtGenerate = jwt.sign(
@@ -131,7 +131,7 @@ exports.signIn = async (req, res) => {
     );
     // Decode the JWT token to get the expiration time in milliseconds
     const expiresAt = jwt.decode(jwtGenerate).exp * 1000; // Convert to milliseconds
-    console.log('JWT decoded exp in ms:', expiresAt);
+   
 
     // Optionally, generate Personal Access Token if required
     // await generatePersonalAccessToken(isAvailable, email, tokenExpiresInSecond);
@@ -304,6 +304,75 @@ exports.getAuthUserDetails = async (req, res) => {
   
 };
 
+
+exports.userAddressUpdate = async (req, res) => {
+  try {
+    const { userId, address } = req.body;
+
+    // Validate required fields
+    if (!userId || !address) {
+      return res.status(400).json({
+        success: 0,
+        message: 'userId and address are required.',
+      });
+    }
+
+    // Parse `address` if it is a JSON string
+    let parsedAddress = address;
+    if (typeof address === 'string') {
+      try {
+        parsedAddress = JSON.parse(address);
+      } catch (error) {
+        return res.status(400).json({
+          success: 0,
+          message: 'Invalid JSON format for address!',
+        });
+      }
+    }
+
+    // Validate `address` to ensure it is an array of objects
+    if (
+      !Array.isArray(parsedAddress) ||
+      !parsedAddress.every((item) => typeof item === 'object' && item !== null)
+    ) {
+      return res.status(400).json({
+        success: 0,
+        message: 'address must be an array of objects.',
+      });
+    }
+
+    // Find the user by userId
+    const user = await User.findOne({ _id: userId });
+
+    if (user) {
+      // Update only the `address` field and set the updated timestamp
+      user.address = parsedAddress;
+      user.updated_at = new Date();
+
+      // Save the updated user object with validation only on modified fields
+      const updatedUser = await user.save({ validateModifiedOnly: true });
+
+      return res.status(200).json({
+        success: 1,
+        message: 'User address updated successfully',
+        data: updatedUser,
+      });
+    } else {
+      // If user does not exist, return an error
+      return res.status(404).json({
+        success: 0,
+        message: 'User not found',
+      });
+    }
+  } catch (error) {
+    // Handle server errors
+    res.status(500).json({
+      success: 0,
+      message: 'Server error',
+      error: error.message,
+    });
+  }
+};
 
 const parseDuration = (duration) => {
   const match = duration.match(/^(\d+)([dhms])$/);

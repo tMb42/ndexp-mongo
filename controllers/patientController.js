@@ -167,53 +167,6 @@ exports.editPatientInformation = async (req, res) => {
   }
 };
 
-exports.updateAppointmentStatus = async (req, res) => {
-    try {
-      const { patientId, appointmentId, status } = req.body;
-  
-      // Validate status
-      if (!['scheduled', 'completed', 'cancelled'].includes(status)) {
-        return res.status(400).json({
-          success: 0,
-          message: 'Invalid status value!',
-        });
-      }
-  
-      const patient = await Patient.findById(patientId);
-  
-      if (!patient) {
-        return res.status(404).json({
-          success: 0,
-          message: 'Patient not found!',
-        });
-      }
-  
-      // Find and update the appointment
-      const appointment = patient.appointments.id(appointmentId);
-      if (!appointment) {
-        return res.status(404).json({
-          success: 0,
-          message: 'Appointment not found!',
-        });
-      }
-  
-      appointment.status = status; // Update the appointment's status
-      await patient.save();
-  
-      return res.status(200).json({
-        success: 1,
-        message: 'Appointment status updated successfully!',
-        data: appointment,
-      });
-    } catch (error) {
-      console.error('Error updating appointment status:', error);
-      return res.status(500).json({
-        success: 0,
-        message: 'An error occurred while updating the appointment status.',
-      });
-    }
-};
-
 exports.getAppointments = async (req, res) => {
   try {
     const { patientId } = req.params;
@@ -368,7 +321,7 @@ exports.getAllNonScheduledPatients = async (req, res) => {
       userId: { $in: nonScheduledPatients.map((x) => x.patientId._id) },
     });
 
-      console.log('allAppointments', allAppointments);
+     
       
     // Format non-scheduled patient data into a custom structure
     const patientsNonScheduledData = nonScheduledPatients.map((x) => {
@@ -379,7 +332,7 @@ exports.getAllNonScheduledPatients = async (req, res) => {
         [x], // Include the patient object itself
       ).toJSON(); // Convert the result to JSON format
     });
-    console.log('patientsNonScheduledData', patientsNonScheduledData);
+  
     // Send the formatted data as a JSON response
     res.json({
       success: 1, // Indicate success

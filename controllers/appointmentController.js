@@ -1,4 +1,5 @@
 const Appointment = require('../models/appointment');
+const Patient = require('../models/patient');
 const User = require('../models/user');
 const Role = require('../models/role'); 
 const PatientResource = require('../resources/PatientResource');
@@ -177,8 +178,6 @@ exports.getAllAppointments = async (req, res) => {
     const total_appointments = await Appointment.countDocuments({ patientId: { $in: patients.map(pt => pt._id) } });
     const total_pages = Math.ceil(total_appointments / itemsPerPage);
 
-    console.log(appointments.map(x => new PatientResource(x).toJSON()));
-    
     // Response
     return res.status(200).json({
       success: 1,
@@ -247,7 +246,7 @@ exports.createAppointment = async (req, res) => {
             patient.roles.push(patientRole._id); // Add "Patient" role if not already present
           }
           await patient.save(); // Save updated user roles
-          console.log("Updated User Roles:", patient.roles);
+       
         }
         // Create new appointment
         const newAppointment = new Appointment({
@@ -300,5 +299,56 @@ exports.getBookedTimeSlot = async (req, res) => {
     res.json({ bookedTimes });
   } catch (error) {
     res.status(500).json({ success: 0, message: "Error fetching booked times" });
+  }
+};
+
+exports.updateAppointmentStatus = async (req, res) => {
+  try {
+    const { userId, appointmentId, status } = req.body;
+
+    // Validate status
+    if (!['scheduled', 'completed', 'cancelled'].includes(status)) {
+      return res.status(400).json({
+        success: 0,
+        message: 'Invalid status value!',
+      });
+    }
+
+    // Find the patient to ensure it exists
+    const patient = await Patient.findOne({ userId: userId }).populate('appointments');
+    if (!patient) {
+      return res.status(404).json({
+        success: 0,
+        message: 'Patient not found!',
+      });
+    }
+   
+    
+    // Find and update the specific appointment
+    const appointment = await Appointment.findOneAndUpdate(
+      { _id: appointmentId, patientId: patient.userId }, // Ensure the appointment belongs to the patient
+      { status: status }, // Update the status
+      { new: true } // Return the updated document
+    );
+   
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: 0,
+        message: 'Appointment not found!',
+      });
+    }
+
+    return res.status(200).json({
+      success: 1,
+      message: 'Appointment status updated successfully!',
+      data: appointment,
+    });
+  } catch (error) {
+    console.error('Error updating appointment status:', error);
+    return res.status(500).json({
+      success: 0,
+      message: 'An error occurred while updating the appointment status.',
+    });
   }
 };

@@ -13,6 +13,7 @@ router.route('/logout').post(verifyToken, authClr.signOut);
 router.route('/email/verify/:userId/:token').get(authClr.verifyEmail);
 router.route('/userDetails').get(verifyToken, authClr.getAuthUserDetails);
 router.route('/profile').put(verifyToken, authClr.updateUserProfile);
+router.route('/address').put(verifyToken, authClr.userAddressUpdate);
 
 
 

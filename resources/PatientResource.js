@@ -25,7 +25,7 @@ class PatientResource {
             appointmentId: _id,
             appointmentDateTime: `${formatOnlyDate(appointmentDate)} ${appointmentTime}`,
             reasonForVisit,
-            status: sentenceCase(status),
+            status: toUpperCase(status),
             notes: notes || null,
             createdAt: formatDate(createdAt),
             updatedAt: formatDate(updatedAt),
@@ -58,7 +58,7 @@ class PatientResource {
         appointmentId: _id,
         appointmentDateTime,
         reasonForVisit,
-        status: sentenceCase(status),
+        status: toUpperCase(status),
         notes: notes || null,
         createdAt: formatDate(createdAt),
         updatedAt: formatDate(updatedAt),
@@ -81,7 +81,8 @@ class PatientResource {
         patientAge: calculateAge(dob),
         // Doctor data
         doctorId: doctorId ? doctorId._id : null,
-        doctorName: doctorId.name 
+        doctorName: doctorId.name,
+        doctorMobile_no: doctorId.mobile_no 
     };
   }
 } 
