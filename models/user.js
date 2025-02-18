@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please enter your name'],
         trim: true,
-        maxlength: [150, 'Name cannot exceed 150 characters']
     },
     dob: {
         type: Date,
@@ -43,21 +42,30 @@ const userSchema = new mongoose.Schema({
     },
     remember_token: {
         type: String,
-    },
+    }, 
     address: {
-        type: [
-          {
-            type: mongoose.Schema.Types.Mixed, // Flexible structure for symptoms
-          },
-        ],
-        required: false,
-        validate: {
-          validator: function (value) {
-            return Array.isArray(value) && value.every((item) => typeof item === 'object');
-          },
-          message: 'Address must be an array of objects.',
+        current: { 
+            type: mongoose.Schema.Types.Mixed, 
+            default: null,
+            required: false,
         },
-    },
+        previous: {
+            type: [
+                { 
+                    type: mongoose.Schema.Types.Mixed, 
+                    _id: false // ✅ Prevents `_id`
+                }
+            ], 
+            default: [], // ✅ Ensures empty array if no previous addresses
+            validate: {
+                validator: function (value) {
+                  return Array.isArray(value) && value.every((item) => typeof item === 'object');
+                },
+                message: 'Previous addresses must be an array of objects.',
+            },
+        },
+        
+    },    
     photo: {
         type: String,
         default: 'storage/images/no_image.png', // Default image path

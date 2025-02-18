@@ -286,64 +286,56 @@ exports.getNeverAppointedPatients = async (req, res) => {
 
 exports.getAllNonScheduledPatients = async (req, res) => {
   try {
-    const { doctorId, date } = req.body; // Extract `doctorId` and `date` from the request body
+    const { doctorId, date } = req.body; // Extract `doctorId` and `date`
     
-    // Get the date range (start and end of the day) for the specified date or the current date
-    const { start, end } = getDateRange(date || new Date()); 
-    const startUTC = new Date(start.getTime() - start.getTimezoneOffset() * 60000); // Convert start time to UTC
-    const endUTC = new Date(end.getTime() - end.getTimezoneOffset() * 60000); // Convert end time to UTC
+    // Get the date range for the selected date (or today if not provided)
+    const { start, end } = getDateRange(date || new Date());
+    const startUTC = new Date(start.getTime() - start.getTimezoneOffset() * 60000);
+    const endUTC = new Date(end.getTime() - end.getTimezoneOffset() * 60000);
 
-    // Find all appointments for the specified doctor within the given date range
-    const appointments = await Appointment.find({
+    // Step 1: Find all patients who have **any** appointment (past or today)
+    const allAppointments = await Appointment.find({
+      doctorId: doctorId,
+    }).distinct("patientId"); // Get distinct patient IDs
+
+    // Step 2: Find patients who have a **scheduled** appointment today
+    const scheduledPatientsToday = await Appointment.find({
       doctorId: doctorId,
       appointmentDate: { $gte: startUTC, $lte: endUTC },
-    })
-    .populate({
-      path: 'patientId',
-      model: 'User', // Populate the patient details
-      populate: { path: 'roles', model: 'Role' }, // Also populate roles inside patientId
+      status: "scheduled",
+    }).distinct("patientId"); // Get distinct patient IDs
+
+    // Step 3: Filter out patients who **do not have a scheduled appointment today**
+    const nonScheduledPatients = allAppointments.filter(
+      (patientId) => !scheduledPatientsToday.includes(patientId.toString())
+    );
+
+    //  Fetch all related patient details from the `Patient` collection
+    const patientsData = await Patient.find({
+      userId: { $in: nonScheduledPatients },
     });
 
-    // Extract IDs of patients who have appointments today
-    const patientIds = appointments.map((a) => a.patientId._id);
-   
-    // Find all patients who are NOT scheduled for today
-    const nonScheduledPatients = await Appointment.find({
-      patientId: { $nin: patientIds }, // Exclude patients with today's appointments
-    })
-    .populate({
-      path: 'patientId', 
-    });
-    
-    
-    // Fetch all appointments for the non-scheduled patients
-    const allAppointments = await Patient.find({
-      userId: { $in: nonScheduledPatients.map((x) => x.patientId._id) },
-    });
+    // Step 4: Fetch non-scheduled patient details
+    const patients = await User.find({ _id: { $in: nonScheduledPatients } });
 
-     
-      
-    // Format non-scheduled patient data into a custom structure
-    const patientsNonScheduledData = nonScheduledPatients.map((x) => {
-      
+    // Step 5: Format patient data using UserResource
+    const patientsNonScheduledData = patients.map((x) => {
       return new UserResource(
-        x.patientId?.toObject() || {}, 
-        allAppointments.filter((p) => p.userId.toString() === x.patientId?._id.toString()),
-        [x], // Include the patient object itself
-      ).toJSON(); // Convert the result to JSON format
+        x.toObject() || {}, // Convert patient details to plain object
+        patientsData.filter((p) => p.userId.toString() === x._id.toString()), // Related patient data
+        [] // No current appointment
+      ).toJSON();
     });
-  
-    // Send the formatted data as a JSON response
+
+
     res.json({
-      success: 1, // Indicate success
-      patientsNonScheduledData: patientsNonScheduledData, // Include the formatted data
+      success: 1,
+      patientsNonScheduledData,
     });
-  } 
-  catch (error) {
-    // Handle any errors that occur during the process
+  } catch (error) {
     return res.status(500).json({
-      success: 0, // Indicate failure
-      message: 'An error occurred while fetching patient data.', // Provide an error message
+      success: 0,
+      message: "An error occurred while fetching non-scheduled patient data.",
     });
   }
 };
@@ -360,6 +352,7 @@ exports.getAllScheduledPatients = async (req, res) => {
     const appointments = await Appointment.find({
       doctorId: doctorId,
       appointmentDate: { $gte: startUTC, $lte: endUTC },
+      status: "scheduled", // Only include scheduled appointments
     })
     .populate({
       path: 'patientId',
@@ -369,6 +362,7 @@ exports.getAllScheduledPatients = async (req, res) => {
     
     const patientIds = appointments.map((a) => a.patientId._id);
     // Fetch all related patient details from the `Patient` collection
+
     const patientsData = await Patient.find({
       userId: { $in: patientIds },
     }); // Fetch all fields for the matched patients
@@ -396,7 +390,6 @@ exports.getAllScheduledPatients = async (req, res) => {
   }
   
 };
-
 
 exports.getAllPatientDetails = async (req, res) => {
   try {

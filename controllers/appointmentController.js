@@ -170,7 +170,7 @@ exports.getAllAppointments = async (req, res) => {
         path: 'doctorId',
         select: 'name email mobile_no photo',
       })
-      .sort({ [sort_by]: orderBy === 'asc' ? 1 : -1 }) // Sorting
+      .sort({ [sort_by]: orderBy === 'desc' ? 1 : -1 }) // Sorting
       .skip(skip)
       .limit(itemsPerPage);
 
@@ -217,6 +217,24 @@ exports.createAppointment = async (req, res) => {
         message: "Doctor not found!",
       });
     }
+    // Check if patient exists in 'patients' collection
+    let patientRecord = await Patient.findOne({ userId: patientId });
+
+    if (!patientRecord) {
+      //  Create a new patient entry in the 'patients' collection
+      patientRecord = new Patient({
+        userId: patientId,
+        medicalHistory: [],
+        notes: '',
+        addlInfo: [],
+        visitHistory: [],
+        nextAppointment: null,
+      });
+
+      await patientRecord.save(); // Save the new patient record
+      console.log(`New patient record created for userId: ${patientId}`);
+    }
+
     // Check if the patient already has an appointment with status other than "completed"
     const existingAppointment = await Appointment.findOne({
       patientId,
@@ -259,6 +277,7 @@ exports.createAppointment = async (req, res) => {
           notes: sentenceCase(notes),
         });
         const savedAppointment = await newAppointment.save();
+        
         return res.status(201).json({
           success: 1,
           message: "Appointment created successfully",

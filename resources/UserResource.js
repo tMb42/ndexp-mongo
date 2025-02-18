@@ -118,9 +118,13 @@ class UserResource {
     return formattedApp;
   });
 
-  const addressInfo = Array.isArray(this.user.address) ? 
-    this.user.address.map((x) => x.address) : [];
-
+  // const addressInfo = Array.isArray(this.user.address) ? 
+  //   this.user.address.map((x) => x.address) : [];
+    const addressInfo = this.user.address && this.user.address.current ? 
+    {
+      current: this.user.address.current,  // Current address
+      previous: this.user.address.previous || []  // Previous addresses (empty array if not available)
+    } : [];
 
     return {
       id,

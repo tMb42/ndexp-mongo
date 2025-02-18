@@ -53,12 +53,11 @@ exports.saveMedicineDetails = async (req, res) => {
   }
 };
 
-
 // Fetch all medicine data with pagination and sorting
 exports.getAllMedicines = async (req, res) => {
   try {
     const { page, per_page, orderBy, sort_by } = req.query;
-
+    
     // Convert to integers
     const pageNumber = parseInt(page);
     const itemsPerPage = parseInt(per_page);

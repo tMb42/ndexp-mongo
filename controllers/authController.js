@@ -1,9 +1,11 @@
 const User = require('../models/user'); // Mongoose model for User
-const Role = require('../models/role'); // Mongoose model for Role
+const Role = require('../models/role');
+const Appointment = require('../models/appointment');
 const bcrypt = require('bcryptjs');// Import bcryptjs for password hashing
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken for generating JWT tokens
 const { sendEmailVerificationNotification } = require('../services/emailVerificationService');
 const UserResource = require('../resources/UserResource');
+const PatientResource = require('../resources/PatientResource');
 
 exports.signUp = async (req, res) => {
   try {
@@ -304,68 +306,125 @@ exports.getAuthUserDetails = async (req, res) => {
   
 };
 
+exports.getAllMyAppointment = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ success: 0, message: 'Unauthorized access' });
+    }
+    const { page, per_page, orderBy, sortBy } = req.query;
+    
+    const pageNumber = parseInt(page);
+    const itemsPerPage = parseInt(per_page);
+    const skip = (pageNumber - 1) * itemsPerPage;
+    
+    const patientRole = await Role.findOne({ name: 'patient' });
+    
+    
+    // Find only the logged-in user's appointments
+    const appointments = await Appointment.find({ patientId: req.user.id })
+      .populate('patientId')
+      .populate('doctorId')
+      .sort({ [sortBy]: orderBy === 'desc' ? 1 : -1 })
+      .skip(skip)
+      .limit(itemsPerPage);
+
+    if (!patientRole) {
+      return res.status(404).json({
+        success: 0,
+        message: 'Patient role not found.',
+      });
+    }
+
+    const patients = await User.find({ roles: patientRole._id }).select('_id name');
+
+    if (!patients || patients.length === 0) {
+      return res.status(404).json({
+        success: 0,
+        message: 'No patients found.',
+      });
+    }
+
+    // Count total appointments
+    const total_appointments = await Appointment.countDocuments({ patientId: req.user.id });
+    const total_pages = Math.ceil(total_appointments / itemsPerPage);
+
+    // Response
+    return res.status(200).json({
+      success: 1,
+      dataAppointments: appointments.map(x => new PatientResource(x).toJSON()),
+      total_appointments,
+      total_pages,
+      current_page: pageNumber,
+      itemsPerPage,
+    });
+    
+  } catch (error) {
+    return res.status(500).json({
+      success: 0,
+      message: 'An error occurred while fetching appointments.',
+    });
+  }
+};
 
 exports.userAddressUpdate = async (req, res) => {
   try {
     const { userId, address } = req.body;
 
-    // Validate required fields
-    if (!userId || !address) {
+    if (!userId || !address || address.length === 0) {
       return res.status(400).json({
         success: 0,
         message: 'userId and address are required.',
       });
     }
 
-    // Parse `address` if it is a JSON string
-    let parsedAddress = address;
-    if (typeof address === 'string') {
-      try {
-        parsedAddress = JSON.parse(address);
-      } catch (error) {
-        return res.status(400).json({
-          success: 0,
-          message: 'Invalid JSON format for address!',
-        });
+    const parsedAddress = address[0];
+
+    const formattedAddress = {};
+    Object.keys(parsedAddress).forEach(field => {
+      if (field !== 'postalCode') {
+        formattedAddress[field] = capitalizeWords(parsedAddress[field]);
+      } else {
+        formattedAddress[field] = parsedAddress[field]?.trim() || '';
       }
-    }
+    });
 
-    // Validate `address` to ensure it is an array of objects
-    if (
-      !Array.isArray(parsedAddress) ||
-      !parsedAddress.every((item) => typeof item === 'object' && item !== null)
-    ) {
-      return res.status(400).json({
-        success: 0,
-        message: 'address must be an array of objects.',
-      });
-    }
-
-    // Find the user by userId
     const user = await User.findOne({ _id: userId });
 
-    if (user) {
-      // Update only the `address` field and set the updated timestamp
-      user.address = parsedAddress;
-      user.updated_at = new Date();
-
-      // Save the updated user object with validation only on modified fields
-      const updatedUser = await user.save({ validateModifiedOnly: true });
-
-      return res.status(200).json({
-        success: 1,
-        message: 'User address updated successfully',
-        data: updatedUser,
-      });
-    } else {
-      // If user does not exist, return an error
+    if (!user) {
       return res.status(404).json({
         success: 0,
         message: 'User not found',
       });
     }
+
+    if (!user.address) {
+      user.address = { current: null, previous: [] };
+    }
+
+    const isAddressChanged = JSON.stringify(user.address.current) !== JSON.stringify(formattedAddress);
+
+    if (user.address.current && isAddressChanged) {
+      if (Object.keys(user.address.current).length > 0) {
+        user.address.previous.push(user.address.current);
+      }
+    }
+
+    user.address.current = formattedAddress;
+
+    // Ensure previous does not store empty objects
+    user.address.previous = user.address.previous.filter(prev => Object.keys(prev).length > 0);
+
+    user.updated_at = new Date();
+
+    const updatedUser = await user.save({ validateModifiedOnly: true });
+
+    return res.status(200).json({
+      success: 1,
+      message: 'User address updated successfully',
+      data: updatedUser,
+    });
+
   } catch (error) {
-    // Handle server errors
     res.status(500).json({
       success: 0,
       message: 'Server error',
@@ -373,6 +432,8 @@ exports.userAddressUpdate = async (req, res) => {
     });
   }
 };
+
+
 
 const parseDuration = (duration) => {
   const match = duration.match(/^(\d+)([dhms])$/);
