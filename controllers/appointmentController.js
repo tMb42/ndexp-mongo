@@ -3,7 +3,7 @@ const Patient = require('../models/patient');
 const User = require('../models/user');
 const Role = require('../models/role'); 
 const PatientResource = require('../resources/PatientResource');
-const { formatDate, formatOnlyDate, calculateAge } = require('../helper/dateHelper');
+const { formatDate, formatOnlyDate, calculateAge, parseUserInputDate } = require('../helper/dateHelper');
 
 
 exports.searchBookingDetails = async (req, res) => {
@@ -15,6 +15,15 @@ exports.searchBookingDetails = async (req, res) => {
     }
 
     const regexQuery = new RegExp(query, 'i');
+    
+    // 🔹 Convert input to UTC date range
+    const dateRange = parseUserInputDate(query);
+
+    console.log('🔹 User Input:', query);
+    console.log('🔹 Converted Date Range:', dateRange);
+
+    const dateFilter = dateRange ? { appointmentDate: { $gte: dateRange.start, $lte: dateRange.end } } : {};
+
 
     const results = await Appointment.aggregate([
       // 🔹 Lookup Patient Data (Ensures user data is fetched)
@@ -48,13 +57,20 @@ exports.searchBookingDetails = async (req, res) => {
           preserveNullAndEmptyArrays: true 
         } 
       },
+      // 🔹 Convert `appointmentDate` to String Format (YYYY-MM-DD)
+      {
+        $addFields: {
+          appointmentDateStr: { $dateToString: { format: "%d/%m/%Y", date: "$appointmentDate" } }
+        }
+      },
+      
       // 🔹 Filter Matching Fields
       {
         $match: {
           $or: [
             { reasonForVisit: regexQuery },
             { status: regexQuery },
-            { appointmentDate: regexQuery },
+            { appointmentDateStr: regexQuery },
             { appointmentTime: regexQuery },
 
             // 🔹 Search in Patient Details
@@ -71,6 +87,7 @@ exports.searchBookingDetails = async (req, res) => {
             { 'doctor.mobile_no': regexQuery },
             { 'doctor.email': regexQuery },
           ],
+          ...dateFilter, // ✅ Apply date filter if valid
         },
       },
 
@@ -232,7 +249,7 @@ exports.createAppointment = async (req, res) => {
       });
 
       await patientRecord.save(); // Save the new patient record
-      console.log(`New patient record created for userId: ${patientId}`);
+     
     }
 
     // Check if the patient already has an appointment with status other than "completed"
@@ -276,12 +293,19 @@ exports.createAppointment = async (req, res) => {
           reasonForVisit: sentenceCase(reason),
           notes: sentenceCase(notes),
         });
+
+        // Save the appointment first
         const savedAppointment = await newAppointment.save();
         
+        // Populate patient and doctor details
+        const populatedAppointment = await Appointment.findById(savedAppointment._id)
+          .populate('patientId')
+          .populate('doctorId');
+
         return res.status(201).json({
           success: 1,
           message: "Appointment created successfully",
-          data: savedAppointment,
+          dataAppointments: new PatientResource(populatedAppointment).toJSON()
         });
         
         } catch (error) {
@@ -302,6 +326,115 @@ exports.createAppointment = async (req, res) => {
   } 
 
 };
+
+exports.deleteAppointment = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+
+    if (!appointmentId) {
+      return res.status(400).json({ success: 0, message: "Appointment ID is required" });
+    }
+
+    // Find and delete the appointment
+    const deletedAppointment = await Appointment.findByIdAndDelete(appointmentId);
+
+    if (!deletedAppointment) {
+      return res.status(404).json({ success: 0, message: "Appointment not found!" });
+    }
+
+    return res.json({ 
+      success: 1, 
+      message: "Appointment deleted successfully" 
+    });
+
+  } catch (error) {
+    console.error("Error deleting appointment:", error);
+    return res.status(500).json({ success: 0, message: "An error occurred while deleting the appointment" });
+  }
+};
+
+exports.cancelScheduleAppointment = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+
+    // Validate appointment existence
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ success: 0, message: "Appointment not found!" });
+    }
+
+    // Cancel the appointment
+    appointment.status = "cancelled"; 
+   
+    const canceleScheduleAppointment = await appointment.save();
+
+    // Populate patient and doctor details
+    const populatedAppointment = await Appointment.findById(canceleScheduleAppointment._id)
+      .populate('patientId')
+      .populate('doctorId');
+
+    return res.status(200).json({
+      success: 1,
+      message: "Appointment cancelled successfully",
+      dataAppointments: new PatientResource(populatedAppointment).toJSON()
+    });
+
+  } catch (error) {
+    console.error("Error rescheduling appointment:", error);
+    return res.status(500).json({
+      success: 0,
+      message: "An error occurred while rescheduling the appointment",
+    });
+  }
+};
+
+exports.rescheduleAppointment = async (req, res) => {
+  try {
+    const { appointmentId, appointmentDate, time, doctorId, reason } = req.body;
+
+    // Validate appointment existence
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ success: 0, message: "Appointment not found!" });
+    }
+
+    // Ensure new doctor exists (optional check)
+    if (doctorId) {
+      const doctor = await User.findById(doctorId);
+      if (!doctor) {
+        return res.status(404).json({ success: 0, message: "Doctor not found!" });
+      }
+    }
+   
+    // Update the appointment details
+    appointment.appointmentDate = appointmentDate;
+    appointment.appointmentTime = time;
+    appointment.doctorId = doctorId;
+    appointment.reasonForVisit = sentenceCase(reason);
+    appointment.status = "scheduled"; 
+   
+    const reScheduleAppointment = await appointment.save();
+
+    // Populate patient and doctor details
+    const populatedAppointment = await Appointment.findById(reScheduleAppointment._id)
+      .populate('patientId')
+      .populate('doctorId');
+
+    return res.status(200).json({
+      success: 1,
+      message: "Appointment rescheduled successfully",
+      dataAppointments: new PatientResource(populatedAppointment).toJSON()
+    });
+
+  } catch (error) {
+    console.error("Error rescheduling appointment:", error);
+    return res.status(500).json({
+      success: 0,
+      message: "An error occurred while rescheduling the appointment",
+    });
+  }
+};
+
 
 exports.getBookedTimeSlot = async (req, res) => {
   const { doctorId, appointmentDate } = req.body;

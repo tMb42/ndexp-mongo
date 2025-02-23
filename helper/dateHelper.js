@@ -98,6 +98,26 @@ function getDateRange(date = new Date()) {
   return { start, end };
 }
 
+/**
+ * Convert "DD/MM/YYYY" string to an exact UTC date range.
+ * @param {string} dateStr - The date string in "DD/MM/YYYY" format.
+ * @returns {Object|null} An object with `start` and `end` dates in UTC, otherwise `null`.
+ */
+function parseUserInputDate(dateStr) {
+  const dateParts = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 
-module.exports = { formatDate, formatOnlyDate, calculateAge, TimeDifference, getDateRange };
-  
+  if (dateParts) {
+    const day = parseInt(dateParts[1], 10);
+    const month = parseInt(dateParts[2], 10) - 1; // JavaScript months are 0-based
+    const year = parseInt(dateParts[3], 10);
+
+    // 🔹 Convert input to strict **UTC Date**
+    const startUTC = new Date(Date.UTC(year, month, day, 0, 0, 0, 0)); // 00:00 UTC
+    const endUTC = new Date(Date.UTC(year, month, day, 23, 59, 59, 999)); // 23:59 UTC
+
+    return { start: startUTC, end: endUTC };
+  }
+  return null; // Invalid date format
+}
+
+module.exports = { formatDate, formatOnlyDate, calculateAge, TimeDifference, getDateRange, parseUserInputDate };

@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken'); // Import jsonwebtoken for generating JWT t
 const { sendEmailVerificationNotification } = require('../services/emailVerificationService');
 const UserResource = require('../resources/UserResource');
 const PatientResource = require('../resources/PatientResource');
+const PatientCollection = require('../resources/PatientCollection');
 
 exports.signUp = async (req, res) => {
   try {
@@ -365,6 +366,52 @@ exports.getAllMyAppointment = async (req, res) => {
     });
   }
 };
+
+// exports.getAllMyAppointment = async (req, res) => {
+//   try {
+//     if (!req.user || !req.user.id) {
+//       return res.status(401).json({ success: 0, message: 'Unauthorized access' });
+//     }
+
+//     const { page, per_page, orderBy, sortBy } = req.query;
+
+//     const pageNumber = parseInt(page);
+//     const itemsPerPage = parseInt(per_page);
+//     const sort_by = sortBy || 'appointmentDate';
+//     const order_by = orderBy === 'desc' ? -1 : 1;
+//     const skip = (pageNumber - 1) * itemsPerPage;
+
+//     // Fetch appointments and total count
+//     const [appointments, totalAppointments] = await Promise.all([
+//       Appointment.find({ patientId: req.user.id })
+//         .populate('patientId')
+//         .populate('doctorId')
+//         .sort({ [sort_by]: order_by })
+//         .skip(skip)
+//         .limit(itemsPerPage),
+//       Appointment.countDocuments({ patientId: req.user.id }),
+//     ]);
+
+//     const totalPages = Math.ceil(totalAppointments / itemsPerPage);
+   
+//     return res.status(200).json({
+//       success: 1,
+//       dataAppointments: new PatientCollection(appointments, {
+//         totalDocs: totalAppointments, // ✅ Corrected variable name
+//         limit: itemsPerPage,
+//         page: pageNumber,
+//         totalPages: totalPages, // ✅ Corrected variable name
+//       }).toJSON(), // ✅ Ensures dataAppointments is always included
+//     });
+    
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       success: 0,
+//       message: 'An error occurred while fetching appointments.',
+//     });
+//   }
+// };
 
 exports.userAddressUpdate = async (req, res) => {
   try {

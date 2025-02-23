@@ -13,6 +13,4 @@ router.route('/profile').put(verifyToken, authClr.updateUserProfile);
 router.route('/address').put(verifyToken, authClr.userAddressUpdate);
 router.route('/myAppnt').get(verifyToken, authClr.getAllMyAppointment);
 
-
-
 module.exports = router;

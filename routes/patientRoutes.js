@@ -6,6 +6,9 @@ const verifyToken = require('../middleware/verifyJwtToken');
 
 
 router.route('/create-app').post(verifyToken, appointmentClr.createAppointment);
+router.route('/delete-app').post(verifyToken, appointmentClr.deleteAppointment);
+router.route('/cancel-app').post(verifyToken, appointmentClr.cancelScheduleAppointment);
+router.route('/resche-app').post(verifyToken, appointmentClr.rescheduleAppointment);
 router.route('/bookedSlot').post(verifyToken, appointmentClr.getBookedTimeSlot);
 router.route('/appointment').get(verifyToken, appointmentClr.getAllAppointments);
 router.route('/searchBooking').post(verifyToken, appointmentClr.searchBookingDetails);
