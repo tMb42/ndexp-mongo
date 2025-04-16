@@ -307,49 +307,67 @@ exports.getAuthUserDetails = async (req, res) => {
   
 };
 
+
 exports.getAllMyAppointment = async (req, res) => {
   try {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ success: 0, message: 'Unauthorized access' });
     }
-    const { page, per_page, orderBy, sortBy } = req.query;
-    
+
+    const { page = 1, per_page = 10, orderBy = 'desc', sortBy = 'appointmentDate' } = req.query;
     const pageNumber = parseInt(page);
     const itemsPerPage = parseInt(per_page);
     const skip = (pageNumber - 1) * itemsPerPage;
-    
-    const patientRole = await Role.findOne({ name: 'patient' });
-    
-    
-    // Find only the logged-in user's appointments
-    const appointments = await Appointment.find({ patientId: req.user.id })
+
+    // Get user info
+    const userId = req.user.id;
+    const user = await User.findById(userId).populate('roles');
+
+    if (!user) {
+      return res.status(404).json({ success: 0, message: 'User not found' });
+    }
+
+    const roleNames = user.roles.map(role => role.name);
+
+    let filter = {};
+
+    if (roleNames.includes('doctor')) {
+      // Doctor: get only today's appointments assigned to them
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      filter = {
+        doctorId: userId,
+        appointmentDate: {
+          $gte: today,
+          $lt: tomorrow,
+        },
+      };
+
+    } else if (roleNames.includes('patient')) {
+      // Patient: get only their own appointments
+      filter = { patientId: userId };
+
+    } else if (roleNames.includes('admin')) {
+      // Admin: all appointments (optional)
+      filter = {};
+    } else {
+      return res.status(403).json({ success: 0, message: 'Access denied' });
+    }
+
+    // Fetch appointments
+    const appointments = await Appointment.find(filter)
       .populate('patientId')
       .populate('doctorId')
-      .sort({ [sortBy]: orderBy === 'desc' ? 1 : -1 })
+      .sort({ [sortBy]: orderBy === 'desc' ? -1 : 1 })
       .skip(skip)
       .limit(itemsPerPage);
 
-    if (!patientRole) {
-      return res.status(404).json({
-        success: 0,
-        message: 'Patient role not found.',
-      });
-    }
-
-    const patients = await User.find({ roles: patientRole._id }).select('_id name');
-
-    if (!patients || patients.length === 0) {
-      return res.status(404).json({
-        success: 0,
-        message: 'No patients found.',
-      });
-    }
-
-    // Count total appointments
-    const total_appointments = await Appointment.countDocuments({ patientId: req.user.id });
+    const total_appointments = await Appointment.countDocuments(filter);
     const total_pages = Math.ceil(total_appointments / itemsPerPage);
 
-    // Response
     return res.status(200).json({
       success: 1,
       dataAppointments: appointments.map(x => new PatientResource(x).toJSON()),
@@ -358,8 +376,9 @@ exports.getAllMyAppointment = async (req, res) => {
       current_page: pageNumber,
       itemsPerPage,
     });
-    
+
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       success: 0,
       message: 'An error occurred while fetching appointments.',
@@ -367,51 +386,6 @@ exports.getAllMyAppointment = async (req, res) => {
   }
 };
 
-// exports.getAllMyAppointment = async (req, res) => {
-//   try {
-//     if (!req.user || !req.user.id) {
-//       return res.status(401).json({ success: 0, message: 'Unauthorized access' });
-//     }
-
-//     const { page, per_page, orderBy, sortBy } = req.query;
-
-//     const pageNumber = parseInt(page);
-//     const itemsPerPage = parseInt(per_page);
-//     const sort_by = sortBy || 'appointmentDate';
-//     const order_by = orderBy === 'desc' ? -1 : 1;
-//     const skip = (pageNumber - 1) * itemsPerPage;
-
-//     // Fetch appointments and total count
-//     const [appointments, totalAppointments] = await Promise.all([
-//       Appointment.find({ patientId: req.user.id })
-//         .populate('patientId')
-//         .populate('doctorId')
-//         .sort({ [sort_by]: order_by })
-//         .skip(skip)
-//         .limit(itemsPerPage),
-//       Appointment.countDocuments({ patientId: req.user.id }),
-//     ]);
-
-//     const totalPages = Math.ceil(totalAppointments / itemsPerPage);
-   
-//     return res.status(200).json({
-//       success: 1,
-//       dataAppointments: new PatientCollection(appointments, {
-//         totalDocs: totalAppointments, // ✅ Corrected variable name
-//         limit: itemsPerPage,
-//         page: pageNumber,
-//         totalPages: totalPages, // ✅ Corrected variable name
-//       }).toJSON(), // ✅ Ensures dataAppointments is always included
-//     });
-    
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({
-//       success: 0,
-//       message: 'An error occurred while fetching appointments.',
-//     });
-//   }
-// };
 
 exports.userAddressUpdate = async (req, res) => {
   try {
