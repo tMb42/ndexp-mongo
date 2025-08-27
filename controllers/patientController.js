@@ -6,7 +6,7 @@ const CaseHistory = require('../models/casehistory');
 const PatientResource = require('../resources/PatientResource');
 const UserResource = require('../resources/UserResource');
 const { getDateRange } = require('../helper/dateHelper');
-
+const { Symptom } = require('../models');
 
 
 // Save a new patient's information
@@ -284,55 +284,116 @@ exports.getNeverAppointedPatients = async (req, res) => {
   }
 };
 
+// exports.getAllNonScheduledPatients = async (req, res) => {
+//   try {
+//     const { doctorId, currentDate } = req.body; // Extract `doctorId` and `date`
+    
+//     console.log('Parsed Date2:', currentDate);
+//     // Convert the currentDate (ISO string) to a Date object
+//     const date = new Date(currentDate);
+
+//     // Get the date range for the specified date
+//     const { start, end } = getDateRange(date || new Date());
+
+//     // Adjust start and end to UTC (if you need to handle time in UTC)
+//     const startUTC = new Date(start.getTime() - start.getTimezoneOffset() * 60000);
+//     const endUTC = new Date(end.getTime() - end.getTimezoneOffset() * 60000);
+
+//     // Step 1: Find all patients who have **any** appointment (past or today)
+//     const allAppointments = await Appointment.find({
+//       doctorId: doctorId,
+//     }).distinct("patientId"); // Get distinct patient IDs
+
+//     // Step 2: Find patients who have a **scheduled** appointment today
+//     const scheduledPatientsToday = await Appointment.find({
+//       doctorId: doctorId,
+//       appointmentDate: { $gte: startUTC, $lte: endUTC },
+//       status: "scheduled",
+//     }).distinct("patientId"); // Get distinct patient IDs
+
+//     // Step 3: Filter out patients who **do not have a scheduled appointment today**
+//     const nonScheduledPatients = allAppointments.filter(
+//       (patientId) => !scheduledPatientsToday.includes(patientId.toString())
+//     );
+
+//     //  Fetch all related patient details from the `Patient` collection
+//     const patientsData = await Patient.find({
+//       userId: { $in: nonScheduledPatients },
+//     });
+
+//     // Step 4: Fetch non-scheduled patient details
+//     const patients = await User.find({ _id: { $in: nonScheduledPatients } });
+
+//     // Step 5: Format patient data using UserResource
+//     const patientsNonScheduledData = patients.map((x) => {
+//       return new UserResource(
+//         x.toObject() || {}, // Convert patient details to plain object
+//         patientsData.filter((p) => p.userId.toString() === x._id.toString()), // Related patient data
+//         [] // No current appointment
+//       ).toJSON();
+//     });
+
+
+//     res.json({
+//       success: 1,
+//       patientsNonScheduledData,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: 0,
+//       message: "An error occurred while fetching non-scheduled patient data.",
+//     });
+//   }
+// };
+
 exports.getAllNonScheduledPatients = async (req, res) => {
   try {
-    const { doctorId, date } = req.body; // Extract `doctorId` and `date`
-    
-    // Get the date range for the selected date (or today if not provided)
+    const { doctorId, currentDate } = req.body;
+
+    const date = new Date(currentDate);
     const { start, end } = getDateRange(date || new Date());
+
+    // Convert to UTC to match appointment date stored in UTC
     const startUTC = new Date(start.getTime() - start.getTimezoneOffset() * 60000);
     const endUTC = new Date(end.getTime() - end.getTimezoneOffset() * 60000);
 
-    // Step 1: Find all patients who have **any** appointment (past or today)
-    const allAppointments = await Appointment.find({
+    // Step 1: Get all patients who have any appointment with this doctor
+    const allAppointmentPatientIds = await Appointment.find({
       doctorId: doctorId,
-    }).distinct("patientId"); // Get distinct patient IDs
+    }).distinct("patientId");
 
-    // Step 2: Find patients who have a **scheduled** appointment today
-    const scheduledPatientsToday = await Appointment.find({
+    // Step 2: Get patients who already have scheduled appointments for today
+    const scheduledTodayPatientIds = await Appointment.find({
       doctorId: doctorId,
       appointmentDate: { $gte: startUTC, $lte: endUTC },
       status: "scheduled",
-    }).distinct("patientId"); // Get distinct patient IDs
+    }).distinct("patientId");
 
-    // Step 3: Filter out patients who **do not have a scheduled appointment today**
-    const nonScheduledPatients = allAppointments.filter(
-      (patientId) => !scheduledPatientsToday.includes(patientId.toString())
+    // Step 3: Filter out patients who are not scheduled today
+    const nonScheduledPatientIds = allAppointmentPatientIds.filter(
+      (id) => !scheduledTodayPatientIds.includes(id.toString())
     );
 
-    //  Fetch all related patient details from the `Patient` collection
-    const patientsData = await Patient.find({
-      userId: { $in: nonScheduledPatients },
+    // Step 4: Fetch user (basic) and patient (extended) info
+    const [users, patientDetails] = await Promise.all([
+      User.find({ _id: { $in: nonScheduledPatientIds } }),
+      Patient.find({ userId: { $in: nonScheduledPatientIds } }),
+    ]);
+
+    // Step 5: Format data into resource
+    const patientsNonScheduledData = users.map((user) => {
+      const patientDetail = patientDetails.filter(
+        (p) => p.userId.toString() === user._id.toString()
+      );
+      return new UserResource(user.toObject(), patientDetail, []).toJSON();
     });
-
-    // Step 4: Fetch non-scheduled patient details
-    const patients = await User.find({ _id: { $in: nonScheduledPatients } });
-
-    // Step 5: Format patient data using UserResource
-    const patientsNonScheduledData = patients.map((x) => {
-      return new UserResource(
-        x.toObject() || {}, // Convert patient details to plain object
-        patientsData.filter((p) => p.userId.toString() === x._id.toString()), // Related patient data
-        [] // No current appointment
-      ).toJSON();
-    });
-
 
     res.json({
       success: 1,
       patientsNonScheduledData,
     });
   } catch (error) {
+    console.error("Error fetching non-scheduled patients:", error);
     return res.status(500).json({
       success: 0,
       message: "An error occurred while fetching non-scheduled patient data.",
@@ -342,30 +403,41 @@ exports.getAllNonScheduledPatients = async (req, res) => {
 
 exports.getAllScheduledPatients = async (req, res) => {
   try {
-    const { doctorId, date } = req.body; // Assume doctor ID and visit date are passed as query parameters
-   
+    const { doctorId, currentDate } = req.body; // Assume doctor ID and visit date are passed as query parameters
+            
+    // Convert the currentDate (ISO string) to a Date object
+    const date = new Date(currentDate);
+    
+    // Convert doctorId to ObjectId
+    // const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
+
     // Get the date range for the specified date
     const { start, end } = getDateRange(date || new Date());
+    
+    // Adjust start and end to UTC (if you need to handle time in UTC)
     const startUTC = new Date(start.getTime() - start.getTimezoneOffset() * 60000);
     const endUTC = new Date(end.getTime() - end.getTimezoneOffset() * 60000);
     
     const appointments = await Appointment.find({
-      doctorId: doctorId,
+      doctorId: doctorId, // ← Use this, not the string
       appointmentDate: { $gte: startUTC, $lte: endUTC },
-      status: "scheduled", // Only include scheduled appointments
+      status: "scheduled",
     })
     .populate({
       path: 'patientId',
-      model: 'User', // Populate the patient details
-      populate: { path: 'roles', model: 'Role' }, // Also populate roles inside patientId
+      model: 'User',
+      populate: { path: 'roles', model: 'Role' },
     });
-    
+    console.log(('Appointments:', appointments));
+
     const patientIds = appointments.map((a) => a.patientId._id);
     // Fetch all related patient details from the `Patient` collection
 
     const patientsData = await Patient.find({
       userId: { $in: patientIds },
     }); // Fetch all fields for the matched patients
+
+
 
     // Map each appointment to a formatted patient schedule data
     const patientsScheduledData = appointments.map((x) => {
@@ -375,7 +447,7 @@ exports.getAllScheduledPatients = async (req, res) => {
         [x] // Current appointment
       ).toJSON();
     });
-    
+  
     res.json({
       success: 1,
       patientsScheduledData: patientsScheduledData  
@@ -532,3 +604,121 @@ exports.getPatientsAllCaseHistory = async (req, res) => {
     });
   }
 };
+
+exports.getAllPatientSymptoms = async (req, res) => {
+  try {
+    const { page, per_page, orderBy, sort_by } = req.query;
+    
+    // Convert to integers
+    const pageNumber = parseInt(page);
+    const itemsPerPage = parseInt(per_page);
+
+     // Calculate the number of documents to skip based on the page number and limit
+     const skip = (pageNumber - 1) * itemsPerPage;
+
+    // Fetch sorted and paginated data
+    const symptoms = await Symptom.find()
+      .sort({ [sort_by]: orderBy === 'asc' ? 1 : -1 })
+      .skip(skip)
+      .limit(itemsPerPage);
+
+    // Total count
+    const total_symptoms = await Symptom.countDocuments();
+
+    // Calculate total pages
+    const total_pages = Math.ceil(total_symptoms / itemsPerPage);
+
+    res.status(200).json({
+      success: 1,
+      dataSymptom: symptoms,
+      total_symptoms,
+      total_pages,
+      current_page: page,
+      itemsPerPage,
+    });
+  } catch (error) {
+    res.status(500).json({ success: 0,  message: error, });
+  }
+};
+
+exports.savePatientsSymptoms = async (req, res) => {
+  try {
+    const { 
+      name,
+      descriptions,
+      inforce,
+      display,
+      remarks 
+    } = req.body;
+     
+    // Function to split values by commas and capitalize each value
+    const splitByCommaAndCapitalize = (field) => {
+      if (field && typeof field === 'string') {
+        return field.split(',').map(item => capitalizeWords(item.trim())); // Split by comma and capitalize each word
+      }
+      return field ? [capitalizeWords(field)] : []; // If not a string or empty, return as a single-item array with capitalized value
+    };
+
+    // Ensure all fields are arrays and apply sentenceCase
+    const newSymptoms = new Symptom({
+      name: capitalizeWords(name),
+      descriptions: splitByCommaAndCapitalize(descriptions), 
+      inforce: inforce ? parseInt(inforce) : 1, // Default to 1 if not provided
+      display: display ? parseInt(display) : 1, // Default to 1 if not provided
+      remarks: remarks ? sentenceCase(remarks) : null, 
+    });
+
+    const savedSymptoms = await newSymptoms.save();
+    
+    return res.status(201).json({
+      success: 1,
+      message: 'Symptoms saved successfully',
+      dataSymptoms: savedSymptoms,
+    });
+  } catch (error) {
+    console.error('Error creating appointment:', error);
+    return res.status(500).json({
+      success: 0,
+      message: 'An error occurred while creating the appointment',
+    });
+  }
+  
+};
+
+exports.saveSymptomsType = async (req, res) => {
+  try {
+    const { 
+      descriptions, 
+      category 
+    } = req.body;
+
+    // Validate required fields
+    if (!descriptions || !category) {
+      return res.status(400).json({
+        success: 0,
+        message: 'Category and descriptions are required.',
+      });
+    }
+
+    const newSymptomsType = new Symptom({
+      category: capitalizeWords(category),
+      descriptions: sentenceCase(descriptions),
+    });
+
+    const savedSymptomsType = await newSymptomsType.save();
+
+    return res.status(201).json({
+      success: 1,
+      message: 'Symptoms Type saved successfully',
+      dataSympType: savedSymptomsType,
+    });
+  } catch (error) {
+    console.error('Error saving symptom type:', error.message);
+    return res.status(500).json({
+      success: 0,
+      message: 'An error occurred while saving the symptom type',
+      error: error.message,
+    });
+  }
+};
+

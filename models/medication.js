@@ -43,6 +43,11 @@ const medicationSchema = new mongoose.Schema(
       trim: true,
       default: null,
     },
+    mind: {
+      type: [String],
+      trim: true,
+      default: null,
+    },
     notes: {
       type: String,
       trim: true,

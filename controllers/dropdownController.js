@@ -1,4 +1,5 @@
 const Country = require('../models/country');
+const Symptom = require('../models/symptom');
 
 
 async function getAllCountries(req, res) {
@@ -30,6 +31,34 @@ async function getAllCountries(req, res) {
     }
 }
 
+async function getAllSymptomsType(req, res) {
+    try {
+        const symptoms = await Symptom.find(); // Mongoose method to fetch all countries
+        const sympTypes = symptoms.map((typ) => ({
+            id: typ._id,  
+            category: typ.category,  
+            descriptions: typ.descriptions,  
+            display: typ.display, 
+            inforce: typ.inforce,
+            created_at: typ.createdAt,  
+            updated_at: typ.updatedAt, 
+        }));
+
+        // Return the data in the required format
+        res.json({
+            sympTypes
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ 
+            status: 'error',
+            message: 'Error fetching countries',
+            error: err.message
+        });
+    }
+}
+
 module.exports = {
     getAllCountries,
+    getAllSymptomsType,
 }

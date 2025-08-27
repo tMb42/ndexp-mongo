@@ -9,6 +9,7 @@ router.route('/cpanel/medicines').get(verifyToken, medicationClr.getAllMedicines
 router.route('/cpanel/med/:id').get(verifyToken, medicationClr.getMedicineDetailsById);
 router.route('/cpanel/updateMed').post(verifyToken, medicationClr.updateMedicineById);
 router.route('/cpanel/searchMed').post(verifyToken, medicationClr.searchMedicineDetails);
+router.route('/medicines').get(verifyToken, medicationClr.getMedicines);
 
 
 module.exports = router;

@@ -6,7 +6,7 @@ const Medication = require('./medication');
 const Therapy = require('./therapy');
 const Appointment = require('./appointment');
 const CaseHistory = require('./casehistory');
-
+const Symptom = require('./symptom');
 
 module.exports = {
   Country,
@@ -16,5 +16,6 @@ module.exports = {
   Medication,
   Therapy,
   CaseHistory,
-  Appointment
+  Appointment,
+  Symptom
 };

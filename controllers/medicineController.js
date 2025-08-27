@@ -90,6 +90,19 @@ exports.getAllMedicines = async (req, res) => {
   }
 };
 
+exports.getMedicines = async (req, res) => {
+  try {
+    const medicines = await Medicine.find().select('name -_id'); // Only get names
+
+    res.status(200).json({
+      success: 1,
+      dataMedicine: medicines.map(m => m.name), // Return only an array of names
+    });
+  } catch (error) {
+    res.status(500).json({ success: 0, message: error.message });
+  }
+};
+
 exports.getMedicineDetailsById = async (req, res) => {
   try {
     const medicineId = req.params.id; // Extract ID from route parameter

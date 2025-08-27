@@ -24,6 +24,10 @@ router.route('/nonSchPtns').post(verifyToken, patientClr.getAllNonScheduledPatie
 router.route('/savedCaseHistory').post(verifyToken, patientClr.savePatientsCaseHistory);
 router.route('/caseHistories').post(verifyToken, patientClr.getPatientsAllCaseHistory);
 router.route('/editPatient').put(verifyToken, patientClr.editPatientInformation);
+router.route('/symptoms').get(verifyToken, patientClr.getAllPatientSymptoms);
+router.route('/sympTyp').post(verifyToken, patientClr.saveSymptomsType);
+router.route('/ptnSympt').post(verifyToken, patientClr.savePatientsSymptoms);
+
 
 
 
