@@ -1,122 +1,52 @@
 
-1756476573749:::ffff:127.0.0.1 POST: /api/login
+1756872163051:::ffff:127.0.0.1 POST: /api/login
 
-1756476574001:::ffff:127.0.0.1 GET: /api/userDetails
+1756872163289:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756476574013:::ffff:127.0.0.1 GET: /api/userDetails
+1756872163304:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756476575031:::ffff:127.0.0.1 GET: /api/myAppnt
+1756872164396:::ffff:127.0.0.1 GET: /api/myAppnt
 
-1756476578783:::ffff:127.0.0.1 GET: /api/ptns
+1756872165549:::ffff:127.0.0.1 GET: /api/doctors
 
-1756476578794:::ffff:127.0.0.1 GET: /api/userDetails
+1756872165562:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756476578823:::ffff:127.0.0.1 POST: /api/scheduledPtns
+1756872175085:::ffff:127.0.0.1 GET: /api/doctors
 
-1756476578824:::ffff:127.0.0.1 POST: /api/nonSchPtns
+1756872175091:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756476581511:::ffff:127.0.0.1 GET: /api/patients
+1756872401362:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756476581514:::ffff:127.0.0.1 GET: /api/appointment
+1756872401419:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756476584513:::ffff:127.0.0.1 GET: /api/userDetails
+1756872402394:::ffff:127.0.0.1 GET: /api/myAppnt
 
-1756476588986:::ffff:127.0.0.1 PUT: /api/updateStatus
+1756872404388:::ffff:127.0.0.1 POST: /api/logout
 
-1756476590098:::ffff:127.0.0.1 GET: /api/appointment
+1756872412720:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756483208931:::ffff:127.0.0.1 POST: /api/logout
+1756872412728:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756483217106:::ffff:127.0.0.1 POST: /api/login
+1756872413753:::ffff:127.0.0.1 GET: /api/myAppnt
 
-1756483217256:::ffff:127.0.0.1 GET: /api/userDetails
+1756872414449:::ffff:127.0.0.1 POST: /api/logout
 
-1756483217266:::ffff:127.0.0.1 GET: /api/userDetails
+1756872433557:::ffff:127.0.0.1 POST: /api/login
 
-1756483218293:::ffff:127.0.0.1 GET: /api/myAppnt
+1756872433794:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756483379275:::ffff:127.0.0.1 GET: /api/userDetails
+1756872433930:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756483379326:::ffff:127.0.0.1 GET: /api/userDetails
+1756872434821:::ffff:127.0.0.1 GET: /api/myAppnt
 
-1756483380315:::ffff:127.0.0.1 GET: /api/myAppnt
+1756872437971:::ffff:127.0.0.1 GET: /api/patients
 
-1756483382893:::ffff:127.0.0.1 GET: /api/patients
+1756872437974:::ffff:127.0.0.1 GET: /api/appointment
 
-1756483382898:::ffff:127.0.0.1 GET: /api/appointment
+1758448661872:::ffff:127.0.0.1 POST: /api/login
 
-1756483650349:::ffff:127.0.0.1 GET: /api/userDetails
+1758448662152:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756483650350:::ffff:127.0.0.1 GET: /api/ptns
+1758448662165:::ffff:127.0.0.1 GET: /api/userDetails
 
-1756483650494:::ffff:127.0.0.1 POST: /api/scheduledPtns
-
-1756483650495:::ffff:127.0.0.1 POST: /api/nonSchPtns
-
-1756483674651:::ffff:127.0.0.1 GET: /api/patients
-
-1756483674660:::ffff:127.0.0.1 GET: /api/appointment
-
-1756484770670:::ffff:127.0.0.1 GET: /api/appointment
-
-1756484773397:::ffff:127.0.0.1 GET: /api/appointment
-
-1756484780704:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756484781699:::ffff:127.0.0.1 GET: /api/patients
-
-1756484781703:::ffff:127.0.0.1 GET: /api/appointment
-
-1756484786290:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756484787298:::ffff:127.0.0.1 GET: /api/myAppnt
-
-1756484791419:::ffff:127.0.0.1 GET: /api/patients
-
-1756484791422:::ffff:127.0.0.1 GET: /api/appointment
-
-1756487069952:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756487070955:::ffff:127.0.0.1 GET: /api/patients
-
-1756487070958:::ffff:127.0.0.1 GET: /api/appointment
-
-1756487076803:::ffff:127.0.0.1 GET: /api/ptns
-
-1756487076816:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756487076855:::ffff:127.0.0.1 POST: /api/scheduledPtns
-
-1756487076856:::ffff:127.0.0.1 POST: /api/nonSchPtns
-
-1756487079475:::ffff:127.0.0.1 GET: /api/patients
-
-1756487079478:::ffff:127.0.0.1 GET: /api/appointment
-
-1756487081079:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756487082140:::ffff:127.0.0.1 GET: /api/patients
-
-1756487082148:::ffff:127.0.0.1 GET: /api/appointment
-
-1756487085189:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756487086195:::ffff:127.0.0.1 GET: /api/myAppnt
-
-1756487089212:::ffff:127.0.0.1 GET: /api/patients
-
-1756487089215:::ffff:127.0.0.1 GET: /api/appointment
-
-1756487092951:::ffff:127.0.0.1 GET: /api/appointment
-
-1756487095654:::ffff:127.0.0.1 GET: /api/appointment
-
-1756487107784:::ffff:127.0.0.1 POST: /api/logout
-
-1756487113920:::ffff:127.0.0.1 POST: /api/login
-
-1756487114011:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756487114017:::ffff:127.0.0.1 GET: /api/userDetails
-
-1756487115030:::ffff:127.0.0.1 GET: /api/myAppnt
+1758448663196:::ffff:127.0.0.1 GET: /api/myAppnt
