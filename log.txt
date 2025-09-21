@@ -1,0 +1,80 @@
+
+1758473441532:::ffff:127.0.0.1 POST: /api/login
+
+1758473441851:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473441881:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473442990:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473448858:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473448900:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473449831:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473455055:::ffff:127.0.0.1 POST: /api/logout
+
+1758473464687:::ffff:127.0.0.1 POST: /api/login
+
+1758473464773:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473464781:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473465801:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473505398:::ffff:127.0.0.1 POST: /api/logout
+
+1758473509609:::ffff:127.0.0.1 POST: /api/login
+
+1758473509733:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473509741:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473510756:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473515997:::ffff:127.0.0.1 POST: /api/logout
+
+1758473536778:::ffff:127.0.0.1 POST: /api/login
+
+1758473536866:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473536873:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473537895:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473539599:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473539651:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473540531:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473542310:::ffff:127.0.0.1 POST: /api/logout
+
+1758473561350:::ffff:127.0.0.1 POST: /api/login
+
+1758473561532:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473561564:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473562650:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473585092:::ffff:127.0.0.1 OPTIONS: /api/logout
+
+1758473598649:::ffff:127.0.0.1 OPTIONS: /api/userDetails
+
+1758473598698:::ffff:127.0.0.1 OPTIONS: /api/userDetails
+
+1758473614343:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473761074:::ffff:127.0.0.1 POST: /api/login
+
+1758473761294:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473761329:::ffff:127.0.0.1 GET: /api/userDetails
+
+1758473762411:::ffff:127.0.0.1 GET: /api/myAppnt
+
+1758473781402:::ffff:127.0.0.1 GET: /api/patients
+
+1758473781422:::ffff:127.0.0.1 GET: /api/appointment
